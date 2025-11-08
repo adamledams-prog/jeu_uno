@@ -110,16 +110,65 @@ const winningCombinations = [
 const homePage = document.getElementById('homePage');
 const playButton = document.getElementById('playButton');
 const avatarSelection = document.getElementById('avatarSelection');
+const avatarSelectionSolo = document.getElementById('avatarSelectionSolo');
 const gameArea = document.getElementById('gameArea');
 const difficultySelection = document.getElementById('difficultySelection');
 
 // Gestion de la difficulté
 let gameMode = 'player'; // 'player' ou 'computer'
 let difficulty = ''; // 'easy', 'medium', 'hard'
+let player1AvatarSolo = '';
+let player1PseudoSolo = '';
 
-// Bouton pour jouer contre l'ordinateur
+// Bouton pour jouer contre l'ordinateur (depuis la page avatars 2 joueurs)
 document.getElementById('computerButton').addEventListener('click', () => {
     avatarSelection.style.display = 'none';
+    avatarSelectionSolo.style.display = 'block';
+    chatbot.showMessage('avatarSelection');
+});
+
+// Sélection de l'avatar en mode solo
+document.querySelectorAll('.avatar-btn-solo').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const avatar = this.dataset.avatar;
+        
+        // Désélectionner les autres avatars
+        document.querySelectorAll('.avatar-btn-solo').forEach(b => {
+            b.classList.remove('selected');
+        });
+        
+        // Sélectionner cet avatar
+        this.classList.add('selected');
+        player1AvatarSolo = avatar;
+        document.getElementById('player1SelectedSolo').textContent = avatar;
+        
+        // Activer le bouton si avatar et pseudo sont remplis
+        checkStartComputerButton();
+    });
+});
+
+// Écouter les changements dans le champ pseudo solo
+document.getElementById('player1NameSolo').addEventListener('input', checkStartComputerButton);
+
+// Fonction pour vérifier si le bouton start computer peut être activé
+function checkStartComputerButton() {
+    const pseudo = document.getElementById('player1NameSolo').value.trim();
+    const startBtn = document.getElementById('startComputerGame');
+    
+    if (player1AvatarSolo && pseudo.length > 0) {
+        startBtn.disabled = false;
+    } else {
+        startBtn.disabled = true;
+    }
+}
+
+// Démarrer le jeu contre l'ordinateur
+document.getElementById('startComputerGame').addEventListener('click', () => {
+    player1PseudoSolo = document.getElementById('player1NameSolo').value || 'Joueur';
+    player1Avatar = player1AvatarSolo;
+    player1Pseudo = player1PseudoSolo;
+    
+    avatarSelectionSolo.style.display = 'none';
     difficultySelection.style.display = 'block';
     chatbot.showMessage('difficulty');
 });
@@ -145,7 +194,7 @@ document.getElementById('hardMode').addEventListener('click', () => {
 
 document.getElementById('backFromDifficulty').addEventListener('click', () => {
     difficultySelection.style.display = 'none';
-    gameArea.style.display = 'block';
+    avatarSelectionSolo.style.display = 'block';
 });
 
 function startComputerGame(difficulty) {
@@ -520,26 +569,44 @@ resetGameBtn.addEventListener('click', () => {
 // Bouton changer les avatars
 changeAvatarsBtn.addEventListener('click', () => {
     gameArea.style.display = 'none';
-    avatarSelection.style.display = 'block';
     resetBoard();
     
     // Réinitialiser les scores
     scores = { player1: 0, player2: 0 };
     
-    // Désélectionner tous les avatars
-    document.querySelectorAll('.avatar-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-    
-    player1Avatar = '';
-    player2Avatar = '';
-    player1Pseudo = '';
-    player2Pseudo = '';
-    document.getElementById('player1Selected').textContent = 'Choisissez...';
-    document.getElementById('player2Selected').textContent = 'Choisissez...';
-    document.getElementById('player1Name').value = '';
-    document.getElementById('player2Name').value = '';
-    startGameBtn.disabled = true;
+    if (gameMode === 'computer') {
+        // Retour à la sélection solo
+        avatarSelectionSolo.style.display = 'block';
+        
+        // Désélectionner les avatars solo
+        document.querySelectorAll('.avatar-btn-solo').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        
+        player1AvatarSolo = '';
+        player1PseudoSolo = '';
+        document.getElementById('player1SelectedSolo').textContent = 'Choisissez...';
+        document.getElementById('player1NameSolo').value = '';
+        document.getElementById('startComputerGame').disabled = true;
+    } else {
+        // Retour à la sélection 2 joueurs
+        avatarSelection.style.display = 'block';
+        
+        // Désélectionner tous les avatars
+        document.querySelectorAll('.avatar-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        
+        player1Avatar = '';
+        player2Avatar = '';
+        player1Pseudo = '';
+        player2Pseudo = '';
+        document.getElementById('player1Selected').textContent = 'Choisissez...';
+        document.getElementById('player2Selected').textContent = 'Choisissez...';
+        document.getElementById('player1Name').value = '';
+        document.getElementById('player2Name').value = '';
+        startGameBtn.disabled = true;
+    }
 });
 
 // Bouton accueil
@@ -553,18 +620,34 @@ homeButton.addEventListener('click', () => {
     // Réinitialiser les scores
     scores = { player1: 0, player2: 0 };
     
-    // Désélectionner tous les avatars
+    // Désélectionner tous les avatars (2 joueurs)
     document.querySelectorAll('.avatar-btn').forEach(btn => {
         btn.classList.remove('selected');
     });
     
+    // Désélectionner les avatars solo
+    document.querySelectorAll('.avatar-btn-solo').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    
+    // Réinitialiser les variables
     player1Avatar = '';
     player2Avatar = '';
     player1Pseudo = '';
     player2Pseudo = '';
+    player1AvatarSolo = '';
+    player1PseudoSolo = '';
+    gameMode = 'player';
+    
+    // Réinitialiser les champs 2 joueurs
     document.getElementById('player1Selected').textContent = 'Choisissez...';
     document.getElementById('player2Selected').textContent = 'Choisissez...';
     document.getElementById('player1Name').value = '';
     document.getElementById('player2Name').value = '';
     startGameBtn.disabled = true;
+    
+    // Réinitialiser les champs solo
+    document.getElementById('player1SelectedSolo').textContent = 'Choisissez...';
+    document.getElementById('player1NameSolo').value = '';
+    document.getElementById('startComputerGame').disabled = true;
 });

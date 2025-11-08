@@ -80,6 +80,28 @@
             </div>
         </div>
 
+        <!-- Sélection avatar solo (mode ordinateur) -->
+        <div class="avatar-selection-solo" id="avatarSelectionSolo" style="display: none;">
+            <h2>Choisissez votre avatar</h2>
+            <div class="player-setup-solo">
+                <div class="player-config">
+                    <h3>Joueur 1</h3>
+                    <div class="avatar-options">
+                        <button class="avatar-btn-solo" data-avatar="🐱">🐱</button>
+                        <button class="avatar-btn-solo" data-avatar="🐶">🐶</button>
+                        <button class="avatar-btn-solo" data-avatar="🦁">🦁</button>
+                        <button class="avatar-btn-solo" data-avatar="🐼">🐼</button>
+                        <button class="avatar-btn-solo" data-avatar="🦊">🦊</button>
+                        <button class="avatar-btn-solo" data-avatar="🐯">🐯</button>
+                        <button class="avatar-btn-solo" data-avatar="🐺">🐺</button>
+                    </div>
+                    <div class="selected-avatar" id="player1SelectedSolo">Choisissez...</div>
+                    <input type="text" id="player1NameSolo" class="pseudo-input" placeholder="Pseudo (8 lettres max)" maxlength="8">
+                </div>
+            </div>
+            <button id="startComputerGame" class="start-btn computer-mode" disabled>🤖 Jouer contre l'ordinateur</button>
+        </div>
+
         <!-- Zone de jeu -->
         <div class="game-area" id="gameArea" style="display: none;">
             <div class="game-info">
