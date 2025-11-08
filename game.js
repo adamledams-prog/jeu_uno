@@ -224,6 +224,27 @@ function startComputerGame(difficulty) {
     avatarSelectionSolo.style.display = 'none';
     gameArea.style.display = 'block';
     
+    // Tirage au sort : quelle équipe commence ?
+    const teamStarts = ['red', 'blue'][Math.floor(Math.random() * 2)];
+    
+    // Déterminer qui commence (joueur ou robot)
+    if (selectedTeam === teamStarts) {
+        // Le joueur commence
+        currentPlayer = 1;
+        chatbot.showMessage('gameStart');
+    } else {
+        // Le robot commence
+        currentPlayer = 2;
+        const startingTeam = teamStarts === 'red' ? 'rouge' : 'bleue';
+        setTimeout(() => {
+            chatbot.showMessage('gameStart');
+            // Le robot joue en premier
+            setTimeout(() => {
+                makeAIMove();
+            }, 1000);
+        }, 500);
+    }
+    
     // Configuration de l'ordinateur selon la difficulté
     if (difficulty === 'easy') {
         player2Pseudo = "Robot Débutant";
@@ -246,11 +267,7 @@ function startComputerGame(difficulty) {
     // Réinitialiser le jeu
     resetBoard();
     gameActive = true;
-    currentPlayer = 1;
     updateCurrentPlayer();
-    
-    // Message du chatbot
-    chatbot.showMessage('gameStart');
 }
 const startGameBtn = document.getElementById('startGame');
 const cells = document.querySelectorAll('.cell');
