@@ -119,12 +119,32 @@ let gameMode = 'player'; // 'player' ou 'computer'
 let difficulty = ''; // 'easy', 'medium', 'hard'
 let player1AvatarSolo = '';
 let player1PseudoSolo = '';
+let selectedTeam = ''; // 'red' ou 'blue'
 
 // Bouton pour jouer contre l'ordinateur (depuis la page avatars 2 joueurs)
 document.getElementById('computerButton').addEventListener('click', () => {
     avatarSelection.style.display = 'none';
     difficultySelection.style.display = 'block';
     chatbot.showMessage('difficulty');
+});
+
+// Sélection de l'équipe
+document.getElementById('teamRedBtn').addEventListener('click', () => {
+    selectedTeam = 'red';
+    document.getElementById('teamRedBtn').classList.add('selected');
+    document.getElementById('teamBlueBtn').classList.remove('selected');
+    document.getElementById('selectedTeam').textContent = '❌ Équipe Rouge sélectionnée';
+    document.getElementById('selectedTeam').style.color = '#e74c3c';
+    checkStartComputerButton();
+});
+
+document.getElementById('teamBlueBtn').addEventListener('click', () => {
+    selectedTeam = 'blue';
+    document.getElementById('teamBlueBtn').classList.add('selected');
+    document.getElementById('teamRedBtn').classList.remove('selected');
+    document.getElementById('selectedTeam').textContent = '⭕ Équipe Bleue sélectionnée';
+    document.getElementById('selectedTeam').style.color = '#3498db';
+    checkStartComputerButton();
 });
 
 // Sélection de l'avatar en mode solo
@@ -155,7 +175,7 @@ function checkStartComputerButton() {
     const pseudo = document.getElementById('player1NameSolo').value.trim();
     const startBtn = document.getElementById('startComputerGame');
     
-    if (player1AvatarSolo && pseudo.length > 0) {
+    if (player1AvatarSolo && pseudo.length > 0 && selectedTeam) {
         startBtn.disabled = false;
     } else {
         startBtn.disabled = true;
@@ -360,6 +380,71 @@ function easyAIMove() {
     return emptyCells[Math.floor(Math.random() * emptyCells.length)];
 }
 
+// Fonction pour l'IA moyenne
+function mediumAIMove() {
+    // Vérifier si l'IA peut gagner (95% de chances de le faire)
+    const aiWinMove = checkTwoInLine(player2Avatar);
+    if (aiWinMove !== -1 && Math.random() < 0.95) {
+        return aiWinMove;
+    }
+
+    // Bloquer le joueur (60% de chances)
+    const playerWinMove = checkTwoInLine(player1Avatar);
+    if (playerWinMove !== -1 && Math.random() < 0.60) {
+        return playerWinMove;
+    }
+
+    // Essayer de prendre le centre si disponible (50% de chances)
+    if (gameBoard[4] === '' && Math.random() < 0.50) {
+        return 4;
+    }
+
+    // Sinon, jouer aléatoirement
+    let emptyCells = [];
+    for (let i = 0; i < gameBoard.length; i++) {
+        if (gameBoard[i] === '') {
+            emptyCells.push(i);
+        }
+    }
+    return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+}
+
+// Fonction pour l'IA difficile
+function hardAIMove() {
+    // Vérifier si l'IA peut gagner (100% de chances - toujours)
+    const aiWinMove = checkTwoInLine(player2Avatar);
+    if (aiWinMove !== -1) {
+        return aiWinMove;
+    }
+
+    // Bloquer le joueur (80% de chances)
+    const playerWinMove = checkTwoInLine(player1Avatar);
+    if (playerWinMove !== -1 && Math.random() < 0.80) {
+        return playerWinMove;
+    }
+
+    // Essayer de prendre le centre si disponible
+    if (gameBoard[4] === '') {
+        return 4;
+    }
+
+    // Prendre les coins en priorité
+    const corners = [0, 2, 6, 8];
+    const availableCorners = corners.filter(i => gameBoard[i] === '');
+    if (availableCorners.length > 0) {
+        return availableCorners[Math.floor(Math.random() * availableCorners.length)];
+    }
+
+    // Sinon, jouer sur n'importe quelle case vide
+    let emptyCells = [];
+    for (let i = 0; i < gameBoard.length; i++) {
+        if (gameBoard[i] === '') {
+            emptyCells.push(i);
+        }
+    }
+    return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+}
+
 // Variable pour suivre si le robot est en train de "réfléchir"
 let isRobotThinking = false;
 
@@ -373,14 +458,35 @@ function makeAIMove() {
     chatbot.showMessage('thinking');
     
     setTimeout(() => {
-        const index = easyAIMove();
+        // Choisir la fonction d'IA selon la difficulté
+        let index;
+        if (difficulty === 'easy') {
+            index = easyAIMove();
+        } else if (difficulty === 'medium') {
+            index = mediumAIMove();
+        } else if (difficulty === 'hard') {
+            index = hardAIMove();
+        }
+        
         const cell = document.querySelector(`[data-index="${index}"]`);
         
         // Effacer le message de réflexion
         document.getElementById('chatbotMessages').innerHTML = '';
         
+        // Déterminer le symbole et la couleur du robot selon l'équipe choisie
+        let symbol, color;
+        if (selectedTeam === 'red') {
+            // Joueur est rouge, robot est bleu
+            symbol = '⭕';
+            color = '#3498db';
+        } else {
+            // Joueur est bleu, robot est rouge
+            symbol = '❌';
+            color = '#e74c3c';
+        }
+        
         gameBoard[index] = player2Avatar;
-        cell.innerHTML = `<span style="color: #3498db">⭕</span>`;
+        cell.innerHTML = `<span style="color: ${color} !important;">${symbol}</span>`;
         cell.classList.add('taken');
 
         if (checkWinner()) {
@@ -406,10 +512,36 @@ cells.forEach(cell => {
             return;
         }
         
-        if (gameBoard[index] === '' && gameActive && currentPlayer === 1) {
-            // Placer le symbole du joueur
-            gameBoard[index] = player1Avatar;
-            cell.innerHTML = `<span style="color: #e74c3c">❌</span>`;
+        // Vérifier si la case est vide et le jeu est actif
+        if (gameBoard[index] === '' && gameActive) {
+            // En mode ordinateur, seul le joueur 1 peut jouer manuellement
+            if (gameMode === 'computer' && currentPlayer !== 1) {
+                return;
+            }
+            
+            // Placer le symbole du joueur actuel
+            const currentAvatar = currentPlayer === 1 ? player1Avatar : player2Avatar;
+            
+            // En mode ordinateur avec sélection d'équipe
+            let symbol, color;
+            if (gameMode === 'computer' && selectedTeam) {
+                if (currentPlayer === 1) {
+                    // Le joueur a choisi son équipe
+                    symbol = selectedTeam === 'red' ? '❌' : '⭕';
+                    color = selectedTeam === 'red' ? '#e74c3c' : '#3498db';
+                } else {
+                    // Le robot a l'équipe opposée
+                    symbol = selectedTeam === 'red' ? '⭕' : '❌';
+                    color = selectedTeam === 'red' ? '#3498db' : '#e74c3c';
+                }
+            } else {
+                // Mode 2 joueurs normal
+                symbol = currentPlayer === 1 ? '❌' : '⭕';
+                color = currentPlayer === 1 ? '#e74c3c' : '#3498db';
+            }
+            
+            gameBoard[index] = currentAvatar;
+            cell.innerHTML = `<span style="color: ${color} !important;">${symbol}</span>`;
             cell.classList.add('taken');
             
             // Vérifier victoire
@@ -417,7 +549,7 @@ cells.forEach(cell => {
                 endGame(false);
             } else if (checkDraw()) {
                 endGame(true);
-            } else if (gameMode === 'computer' && difficulty === 'easy') {
+            } else if (gameMode === 'computer' && (difficulty === 'easy' || difficulty === 'medium' || difficulty === 'hard')) {
                 currentPlayer = 2;
                 updateCurrentPlayer();
                 makeAIMove();
@@ -434,14 +566,26 @@ cells.forEach(cell => {
 function startTimer() {
     if (timer) clearInterval(timer);
     timeLeft = 10;
-    document.getElementById('timer').textContent = timeLeft;
+    const timerElement = document.getElementById('timer');
+    timerElement.textContent = timeLeft;
+    timerElement.style.fontSize = '1.5rem'; // Taille normale
     
     timer = setInterval(() => {
         timeLeft--;
-        document.getElementById('timer').textContent = timeLeft;
+        timerElement.textContent = timeLeft;
+        
+        // Agrandir le timer à partir de 5 secondes
+        if (timeLeft <= 5 && timeLeft > 0) {
+            timerElement.style.fontSize = '2.5rem';
+            timerElement.style.fontWeight = 'bold';
+        } else {
+            timerElement.style.fontSize = '1.5rem';
+            timerElement.style.fontWeight = 'bold';
+        }
         
         if (timeLeft <= 0) {
             clearInterval(timer);
+            timerElement.style.fontSize = '1.5rem'; // Remettre la taille normale
             // Si c'est au tour du joueur 1 et qu'il n'a pas joué, faire un coup aléatoire
             if (currentPlayer === 1 && gameActive) {
                 let emptyCells = [];
@@ -561,13 +705,29 @@ playAgainBtn.addEventListener('click', () => {
 
 // Bouton nouvelle partie
 resetGameBtn.addEventListener('click', () => {
+    // Annuler la partie en cours
+    gameActive = false;
+    if (timer) clearInterval(timer);
+    
+    // Réinitialiser le plateau
     resetBoard();
 });
 
 // Bouton changer les avatars
 changeAvatarsBtn.addEventListener('click', () => {
+    // Annuler la partie en cours
+    gameActive = false;
+    if (timer) clearInterval(timer);
+    
     gameArea.style.display = 'none';
-    resetBoard();
+    
+    // Réinitialiser complètement le jeu
+    gameBoard = ['', '', '', '', '', '', '', '', ''];
+    cells.forEach(cell => {
+        cell.textContent = '';
+        cell.classList.remove('taken', 'winner', 'winner-player1', 'winner-player2');
+    });
+    currentPlayer = 1;
     
     // Réinitialiser les scores
     scores = { player1: 0, player2: 0 };
@@ -580,6 +740,13 @@ changeAvatarsBtn.addEventListener('click', () => {
         document.querySelectorAll('.avatar-btn-solo').forEach(btn => {
             btn.classList.remove('selected');
         });
+        
+        // Désélectionner les équipes
+        document.getElementById('teamRedBtn').classList.remove('selected');
+        document.getElementById('teamBlueBtn').classList.remove('selected');
+        document.getElementById('selectedTeam').textContent = 'Choisissez votre équipe...';
+        document.getElementById('selectedTeam').style.color = '#666';
+        selectedTeam = '';
         
         player1AvatarSolo = '';
         player1PseudoSolo = '';
@@ -609,10 +776,22 @@ changeAvatarsBtn.addEventListener('click', () => {
 
 // Bouton accueil
 homeButton.addEventListener('click', () => {
+    // Annuler la partie en cours
+    gameActive = false;
+    if (timer) clearInterval(timer);
+    
     gameArea.style.display = 'none';
     homePage.style.display = 'block';
     document.body.classList.remove('game-active');
-    resetBoard();
+    
+    // Réinitialiser complètement le jeu
+    gameBoard = ['', '', '', '', '', '', '', '', ''];
+    cells.forEach(cell => {
+        cell.textContent = '';
+        cell.classList.remove('taken', 'winner', 'winner-player1', 'winner-player2');
+    });
+    currentPlayer = 1;
+    
     chatbot.showMessage('returnHome');
     
     // Réinitialiser les scores
@@ -627,6 +806,13 @@ homeButton.addEventListener('click', () => {
     document.querySelectorAll('.avatar-btn-solo').forEach(btn => {
         btn.classList.remove('selected');
     });
+    
+    // Désélectionner les équipes
+    document.getElementById('teamRedBtn').classList.remove('selected');
+    document.getElementById('teamBlueBtn').classList.remove('selected');
+    document.getElementById('selectedTeam').textContent = 'Choisissez votre équipe...';
+    document.getElementById('selectedTeam').style.color = '#666';
+    selectedTeam = '';
     
     // Réinitialiser les variables
     player1Avatar = '';
