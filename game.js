@@ -383,65 +383,37 @@ cells.forEach(cell => {
     });
 });
 
+// Fonction pour démarrer le timer
+function startTimer() {
+    if (timer) clearInterval(timer);
+    timeLeft = 10;
+    document.getElementById('timer').textContent = timeLeft;
+    
+    timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            // Si c'est au tour du joueur 1 et qu'il n'a pas joué, faire un coup aléatoire
+            if (currentPlayer === 1 && gameActive) {
+                let emptyCells = [];
+                for (let i = 0; i < gameBoard.length; i++) {
+                    if (gameBoard[i] === '') {
+                        emptyCells.push(i);
+                    }
+                }
+                if (emptyCells.length > 0) {
+                    const randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                    const cell = document.querySelector(`[data-index="${randomIndex}"]`);
+                    cell.click();
+                }
+            }
+        }
+    }, 1000);
+}
+
 // Mettre à jour l'affichage du joueur actuel
-function startTimer() {
-    if (timer) clearInterval(timer);
-    timeLeft = 10;
-    document.getElementById('timer').textContent = timeLeft;
-    
-    timer = setInterval(() => {
-        timeLeft--;
-        document.getElementById('timer').textContent = timeLeft;
-        
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            // Si c'est au tour du joueur 1 et qu'il n'a pas joué, faire un coup aléatoire
-            if (currentPlayer === 1 && gameActive) {
-                let emptyCells = [];
-                for (let i = 0; i < gameBoard.length; i++) {
-                    if (gameBoard[i] === '') {
-                        emptyCells.push(i);
-                    }
-                }
-                if (emptyCells.length > 0) {
-                    const randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-                    const cell = document.querySelector(`[data-index="${randomIndex}"]`);
-                    cell.click();
-                }
-            }
-        }
-    }, 1000);
-}
-
-function startTimer() {
-    if (timer) clearInterval(timer);
-    timeLeft = 10;
-    document.getElementById('timer').textContent = timeLeft;
-    
-    timer = setInterval(() => {
-        timeLeft--;
-        document.getElementById('timer').textContent = timeLeft;
-        
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            // Si c'est au tour du joueur 1 et qu'il n'a pas joué, faire un coup aléatoire
-            if (currentPlayer === 1 && gameActive) {
-                let emptyCells = [];
-                for (let i = 0; i < gameBoard.length; i++) {
-                    if (gameBoard[i] === '') {
-                        emptyCells.push(i);
-                    }
-                }
-                if (emptyCells.length > 0) {
-                    const randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-                    const cell = document.querySelector(`[data-index="${randomIndex}"]`);
-                    cell.click();
-                }
-            }
-        }
-    }, 1000);
-}
-
 function updateCurrentPlayer() {
     const avatar = currentPlayer === 1 ? player1Avatar : player2Avatar;
     const pseudo = currentPlayer === 1 ? player1Pseudo : player2Pseudo;
@@ -454,14 +426,7 @@ function updateCurrentPlayer() {
     } else {
         if (timer) clearInterval(timer);
         document.getElementById('timer').textContent = '-';
-    }}
-    
-    // Démarrer le timer seulement si c'est au tour du joueur 1
-    if (currentPlayer === 1 && gameMode === 'computer') {
-        startTimer();
-    } else {
-        if (timer) clearInterval(timer);
-        document.getElementById('timer').textContent = '-';
+    }
 }
 
 // Vérifier victoire
