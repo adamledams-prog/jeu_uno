@@ -1,6 +1,47 @@
 // Variables globales
 let player1Avatar = '';
 let player2Avatar = '';
+
+// Chatbot
+const chatbot = {
+    messages: {
+        welcome: [
+            "👋 Bienvenue ! Cliquez sur le mini-jeu pour commencer !",
+            "🎮 Prêt à jouer ? Cliquez sur la grille !",
+            "✨ Hey ! Content de vous voir ! On commence ?"
+        ],
+        avatarSelection: [
+            "🎭 Choisissez vos avatars préférés !",
+            "✏️ N'oubliez pas de choisir vos pseudos !",
+            "🌟 Faites votre choix parmi ces super avatars !"
+        ],
+        gameStart: [
+            "🎲 C'est parti ! Que le meilleur gagne !",
+            "🎯 Montrez-nous vos talents !",
+            "🌈 La partie commence ! Bonne chance !"
+        ],
+        during_game: [
+            "💫 Bien joué ! Continuez comme ça !",
+            "🎯 Belle stratégie !",
+            "✨ Le match est serré !"
+        ]
+    },
+    
+    showMessage(type) {
+        const messages = this.messages[type];
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        const chatbotMessages = document.getElementById('chatbotMessages');
+        
+        // Supprimer l'ancien message
+        chatbotMessages.innerHTML = '';
+        
+        // Ajouter le nouveau message
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message';
+        messageDiv.textContent = randomMessage;
+        chatbotMessages.appendChild(messageDiv);
+    }
+};
 let player1Pseudo = '';
 let player2Pseudo = '';
 let currentPlayer = 1;
@@ -33,11 +74,22 @@ const homeButton = document.getElementById('homeButton');
 const winnerMessage = document.getElementById('winnerMessage');
 const playAgainBtn = document.getElementById('playAgain');
 
-// Bouton Jouer sur la page d'accueil
-playButton.addEventListener('click', () => {
+// Fonction pour aller à la sélection des avatars
+function goToAvatarSelection() {
     homePage.style.display = 'none';
     avatarSelection.style.display = 'block';
     document.body.classList.add('game-active');
+}
+
+// Chatbot initial
+document.addEventListener('DOMContentLoaded', () => {
+    chatbot.showMessage('welcome');
+});
+
+// Clic sur la carte du jeu dans la page d'accueil
+document.getElementById('homeGameCard').addEventListener('click', () => {
+    goToAvatarSelection();
+    chatbot.showMessage('avatarSelection');
 });
 
 // Sélection des avatars
@@ -101,6 +153,7 @@ startGameBtn.addEventListener('click', () => {
     
     updateCurrentPlayer();
     gameActive = true;
+    chatbot.showMessage('gameStart');
 });
 
 // Clic sur une case
@@ -114,8 +167,8 @@ cells.forEach(cell => {
             const symbol = currentPlayer === 1 ? '❌' : '⭕';
             gameBoard[index] = avatar;
             
-            // Afficher seulement le symbole
-            cell.textContent = symbol;
+            // Afficher le symbole avec la bonne couleur
+            cell.innerHTML = `<span style="color: ${currentPlayer === 1 ? '#e74c3c' : '#3498db'}">${symbol}</span>`;
             cell.classList.add('taken');
             
             // Vérifier victoire
