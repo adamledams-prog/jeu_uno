@@ -50,6 +50,11 @@ const chatbot = {
             "⚡ Je calcule mon prochain coup...",
             "🧮 En pleine réflexion..."
         ],
+        hurryUp: [
+            "⏰ Dépêche-toi !",
+            "🕐 Allez, plus vite !",
+            "⌛ On n'a pas toute la journée !"
+        ],
         wait: [
             "⏳ Attendez que je finisse de jouer !",
             "🤚 Un peu de patience, je réfléchis !",
@@ -616,6 +621,9 @@ cells.forEach(cell => {
             } else if (checkDraw()) {
                 endGame(true);
             } else if (gameMode === 'computer' && (difficulty === 'easy' || difficulty === 'medium' || difficulty === 'hard')) {
+                // Annuler le timer du message "Dépêche-toi" quand le joueur joue
+                if (hurryUpTimer) clearTimeout(hurryUpTimer);
+                
                 currentPlayer = 2;
                 updateCurrentPlayer();
                 makeAIMove();
@@ -629,12 +637,23 @@ cells.forEach(cell => {
 });
 
 // Fonction pour démarrer le timer
+let hurryUpTimer = null;
+
 function startTimer() {
     if (timer) clearInterval(timer);
+    if (hurryUpTimer) clearTimeout(hurryUpTimer);
+    
     timeLeft = 10;
     const timerElement = document.getElementById('timer');
     timerElement.textContent = timeLeft;
     timerElement.style.fontSize = '1.5rem'; // Taille normale
+    
+    // Ajouter le message "Dépêche-toi" après 5 secondes en mode ordinateur
+    if (gameMode === 'computer') {
+        hurryUpTimer = setTimeout(() => {
+            chatbot.showMessage('hurryUp');
+        }, 5000);
+    }
     
     timer = setInterval(() => {
         timeLeft--;
@@ -651,6 +670,7 @@ function startTimer() {
         
         if (timeLeft <= 0) {
             clearInterval(timer);
+            if (hurryUpTimer) clearTimeout(hurryUpTimer);
             timerElement.style.fontSize = '1.5rem'; // Remettre la taille normale
             // Si c'est au tour du joueur 1 et qu'il n'a pas joué, faire un coup aléatoire
             if (currentPlayer === 1 && gameActive) {
@@ -751,6 +771,7 @@ function endGame(isDraw) {
 // Réinitialiser le plateau
 function resetBoard() {
     if (timer) clearInterval(timer);
+    if (hurryUpTimer) clearTimeout(hurryUpTimer);
     timeLeft = 10;
     document.getElementById('timer').textContent = '10';
     gameBoard = ['', '', '', '', '', '', '', '', ''];
@@ -774,6 +795,7 @@ resetGameBtn.addEventListener('click', () => {
     // Annuler la partie en cours
     gameActive = false;
     if (timer) clearInterval(timer);
+    if (hurryUpTimer) clearTimeout(hurryUpTimer);
     
     // Réinitialiser le plateau
     resetBoard();
@@ -784,6 +806,7 @@ changeAvatarsBtn.addEventListener('click', () => {
     // Annuler la partie en cours
     gameActive = false;
     if (timer) clearInterval(timer);
+    if (hurryUpTimer) clearTimeout(hurryUpTimer);
     
     gameArea.style.display = 'none';
     
@@ -845,6 +868,7 @@ homeButton.addEventListener('click', () => {
     // Annuler la partie en cours
     gameActive = false;
     if (timer) clearInterval(timer);
+    if (hurryUpTimer) clearTimeout(hurryUpTimer);
     
     gameArea.style.display = 'none';
     homePage.style.display = 'block';
@@ -900,4 +924,13 @@ homeButton.addEventListener('click', () => {
     document.getElementById('player1SelectedSolo').textContent = 'Choisissez...';
     document.getElementById('player1NameSolo').value = '';
     document.getElementById('startComputerGame').disabled = true;
+});
+
+// Boutons retour accueil sur pages de sélection
+document.getElementById('backToHome').addEventListener('click', () => {
+    window.location.href = 'index.html';
+});
+
+document.getElementById('backToHomeSolo').addEventListener('click', () => {
+    window.location.href = 'index.html';
 });
