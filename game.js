@@ -123,8 +123,8 @@ let player1PseudoSolo = '';
 // Bouton pour jouer contre l'ordinateur (depuis la page avatars 2 joueurs)
 document.getElementById('computerButton').addEventListener('click', () => {
     avatarSelection.style.display = 'none';
-    avatarSelectionSolo.style.display = 'block';
-    chatbot.showMessage('avatarSelection');
+    difficultySelection.style.display = 'block';
+    chatbot.showMessage('difficulty');
 });
 
 // Sélection de l'avatar en mode solo
@@ -168,62 +168,60 @@ document.getElementById('startComputerGame').addEventListener('click', () => {
     player1Avatar = player1AvatarSolo;
     player1Pseudo = player1PseudoSolo;
     
-    avatarSelectionSolo.style.display = 'none';
-    difficultySelection.style.display = 'block';
-    chatbot.showMessage('difficulty');
+    // Lancer le jeu avec la difficulté choisie
+    startComputerGame(difficulty);
 });
 
 // Boutons de difficulté
 document.getElementById('easyMode').addEventListener('click', () => {
     difficulty = 'easy';
-    startComputerGame('easy');
-    chatbot.showMessage('gameStartEasy');
+    difficultySelection.style.display = 'none';
+    avatarSelectionSolo.style.display = 'block';
+    chatbot.showMessage('avatarSelection');
 });
 
 document.getElementById('mediumMode').addEventListener('click', () => {
     difficulty = 'medium';
-    startComputerGame('medium');
-    chatbot.showMessage('gameStartMedium');
+    difficultySelection.style.display = 'none';
+    avatarSelectionSolo.style.display = 'block';
+    chatbot.showMessage('avatarSelection');
 });
 
 document.getElementById('hardMode').addEventListener('click', () => {
     difficulty = 'hard';
-    startComputerGame('hard');
-    chatbot.showMessage('gameStartHard');
+    difficultySelection.style.display = 'none';
+    avatarSelectionSolo.style.display = 'block';
+    chatbot.showMessage('avatarSelection');
 });
 
 document.getElementById('backFromDifficulty').addEventListener('click', () => {
     difficultySelection.style.display = 'none';
-    avatarSelectionSolo.style.display = 'block';
+    avatarSelection.style.display = 'block';
 });
 
 function startComputerGame(difficulty) {
     gameMode = 'computer';
-    difficultySelection.style.display = 'none';
+    avatarSelectionSolo.style.display = 'none';
     gameArea.style.display = 'block';
     
     // Configuration de l'ordinateur selon la difficulté
     if (difficulty === 'easy') {
-        player2Name = "Robot Débutant";
+        player2Pseudo = "Robot Débutant";
         player2Avatar = "🤖";
     } else if (difficulty === 'medium') {
-        player2Name = "Robot Avancé";
+        player2Pseudo = "Robot Avancé";
         player2Avatar = "🦾";
     } else {
-        player2Name = "Robot Expert";
+        player2Pseudo = "Robot Expert";
         player2Avatar = "🤯";
     }
-
-    // Configurer le joueur 1 comme humain
-    player1Name = "Joueur";
-    player1Avatar = "👤";
     
     // Mettre à jour l'interface
     document.getElementById('player1Avatar').textContent = player1Avatar;
     document.getElementById('player2Avatar').textContent = player2Avatar;
     document.getElementById('player1Score').textContent = "0";
     document.getElementById('player2Score').textContent = "0";
-    document.getElementById('playerName').textContent = player1Name;
+    document.getElementById('playerName').textContent = player1Pseudo;
     
     // Réinitialiser le jeu
     resetBoard();
