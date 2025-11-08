@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Pendu - Jeu de Devinettes</title>
+    <link rel="stylesheet" href="pendu.css">
+</head>
+
+<body>
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="chatbot" id="chatbot">
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="message">👋 Bienvenue au Pendu !</div>
+        </div>
+        <div class="chatbot-avatar">
+            🤖
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Page d'accueil -->
+        <div class="home-page" id="homePage">
+            <h1>🎭 LE PENDU 🎭</h1>
+            <div class="home-game-card" id="homeGameCard">
+                <div class="mini-hangman">
+                    <div class="hangman-base">
+                        <div class="pole-vertical"></div>
+                        <div class="pole-horizontal"></div>
+                        <div class="pole-rope"></div>
+                        <div class="hangman-head"></div>
+                    </div>
+                    <div class="word-preview">_ _ _ _ _</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sélection de la catégorie -->
+        <div class="category-selection" id="categorySelection" style="display: none;">
+            <h2>Choisissez une catégorie</h2>
+            <button id="backToHomeCategory" class="btn home-btn">🏠 Accueil</button>
+            <div class="category-buttons">
+                <button class="category-btn" data-category="animaux">
+                    <span class="category-icon">🐾</span>
+                    <span class="category-text">Animaux</span>
+                    <span class="category-desc">Lions, éléphants, dauphins...</span>
+                </button>
+                <button class="category-btn" data-category="pays">
+                    <span class="category-icon">🌍</span>
+                    <span class="category-text">Pays</span>
+                    <span class="category-desc">France, Japon, Brésil...</span>
+                </button>
+                <button class="category-btn" data-category="films">
+                    <span class="category-icon">🎬</span>
+                    <span class="category-text">Films</span>
+                    <span class="category-desc">Titanic, Avatar, Inception...</span>
+                </button>
+                <button class="category-btn" data-category="sports">
+                    <span class="category-icon">⚽</span>
+                    <span class="category-text">Sports</span>
+                    <span class="category-desc">Football, Tennis, Natation...</span>
+                </button>
+                <button class="category-btn" data-category="fruits">
+                    <span class="category-icon">🍎</span>
+                    <span class="category-text">Fruits</span>
+                    <span class="category-desc">Pomme, Banane, Fraise...</span>
+                </button>
+                <button class="category-btn" data-category="metiers">
+                    <span class="category-icon">👨‍💼</span>
+                    <span class="category-text">Métiers</span>
+                    <span class="category-desc">Médecin, Professeur, Pompier...</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Zone de jeu -->
+        <div class="game-area" id="gameArea" style="display: none;">
+            <button id="homeButtonTop" class="btn home-btn-top">🏠 Accueil</button>
+
+            <div class="game-header">
+                <div class="game-info">
+                    <div class="category-display">
+                        <span>📂 Catégorie :</span>
+                        <span id="currentCategory">Animaux</span>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-label">❤️ Vies :</span>
+                            <span id="lives" class="stat-value">7</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">🎯 Score :</span>
+                            <span id="score" class="stat-value">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dessin du pendu -->
+            <div class="hangman-container">
+                <svg class="hangman-svg" viewBox="0 0 200 250">
+                    <!-- Base -->
+                    <line x1="10" y1="230" x2="150" y2="230" stroke="#8B4513" stroke-width="4"
+                        class="hangman-part base" />
+                    <!-- Poteau vertical -->
+                    <line x1="50" y1="230" x2="50" y2="20" stroke="#8B4513" stroke-width="4"
+                        class="hangman-part pole" />
+                    <!-- Poteau horizontal -->
+                    <line x1="50" y1="20" x2="130" y2="20" stroke="#8B4513" stroke-width="4"
+                        class="hangman-part beam" />
+                    <!-- Corde -->
+                    <line x1="130" y1="20" x2="130" y2="50" stroke="#654321" stroke-width="2"
+                        class="hangman-part rope" />
+                    <!-- Tête -->
+                    <circle cx="130" cy="70" r="20" stroke="#333" stroke-width="3" fill="none" class="hangman-part head"
+                        style="display: none;" />
+                    <!-- Corps -->
+                    <line x1="130" y1="90" x2="130" y2="150" stroke="#333" stroke-width="3" class="hangman-part body"
+                        style="display: none;" />
+                    <!-- Bras gauche -->
+                    <line x1="130" y1="110" x2="100" y2="130" stroke="#333" stroke-width="3"
+                        class="hangman-part left-arm" style="display: none;" />
+                    <!-- Bras droit -->
+                    <line x1="130" y1="110" x2="160" y2="130" stroke="#333" stroke-width="3"
+                        class="hangman-part right-arm" style="display: none;" />
+                    <!-- Jambe gauche -->
+                    <line x1="130" y1="150" x2="110" y2="190" stroke="#333" stroke-width="3"
+                        class="hangman-part left-leg" style="display: none;" />
+                    <!-- Jambe droite -->
+                    <line x1="130" y1="150" x2="150" y2="190" stroke="#333" stroke-width="3"
+                        class="hangman-part right-leg" style="display: none;" />
+                    <!-- Visage triste (défaite) -->
+                    <g class="hangman-part sad-face" style="display: none;">
+                        <circle cx="122" cy="65" r="2" fill="#333" />
+                        <circle cx="138" cy="65" r="2" fill="#333" />
+                        <path d="M 120 80 Q 130 75 140 80" stroke="#333" stroke-width="2" fill="none" />
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Mot à deviner -->
+            <div class="word-container">
+                <div id="wordDisplay" class="word-display"></div>
+                <div id="hintDisplay" class="hint-display" style="display: none;">
+                    💡 Indice : <span id="hintText"></span>
+                </div>
+            </div>
+
+            <!-- Clavier virtuel -->
+            <div class="keyboard" id="keyboard">
+                <!-- Généré par JavaScript -->
+            </div>
+
+            <!-- Lettres utilisées -->
+            <div class="used-letters-container">
+                <span>Lettres utilisées :</span>
+                <div id="usedLetters" class="used-letters"></div>
+            </div>
+
+            <div class="game-controls">
+                <button id="hintButton" class="btn hint-btn">💡 Indice (-3 vies)</button>
+                <button id="revealLetterButton" class="btn reveal-btn">🔍 Révéler une lettre (-3 vies)</button>
+                <button id="newWord" class="btn">🔄 Nouveau mot</button>
+                <button id="changeCategory" class="btn">📂 Changer catégorie</button>
+            </div>
+        </div>
+
+        <!-- Message de fin -->
+        <div class="end-message" id="endMessage" style="display: none;">
+            <div class="end-content">
+                <div id="endEmoji" class="end-emoji">🎉</div>
+                <h2 id="endTitle"></h2>
+                <div id="endWord" class="end-word"></div>
+                <div id="endScore" class="end-score"></div>
+                <button id="playAgain" class="btn">🔄 Rejouer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/shared/chatbot.js"></script>
+    <script src="pendu.js"></script>
+</body>
+
+</html>

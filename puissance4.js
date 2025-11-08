@@ -61,16 +61,16 @@ const chatbot = {
             "🎭 Personne ne gagne cette fois !"
         ]
     },
-    
+
     showMessage(type) {
         const messages = this.messages[type];
         if (!messages) return;
-        
+
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
         const chatbotMessages = document.getElementById('chatbotMessages');
-        
+
         chatbotMessages.innerHTML = '';
-        
+
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message';
         messageDiv.textContent = randomMessage;
@@ -158,19 +158,19 @@ document.getElementById('backFromPlayers').addEventListener('click', () => {
 // Démarrer le jeu
 document.getElementById('startGame').addEventListener('click', () => {
     player1Name = document.getElementById('player1Name').value.trim() || 'Joueur 1';
-    
+
     if (gameMode === 'twoPlayers') {
         player2Name = document.getElementById('player2Name').value.trim() || 'Joueur 2';
     }
-    
+
     playerSelection.style.display = 'none';
     gameArea.style.display = 'block';
-    
+
     document.getElementById('player1NameDisplay').textContent = player1Name;
     document.getElementById('player2NameDisplay').textContent = player2Name;
     document.getElementById('player1Score').textContent = scores.player1;
     document.getElementById('player2Score').textContent = scores.player2;
-    
+
     resetBoard();
     gameActive = true;
     updateCurrentPlayer();
@@ -181,7 +181,7 @@ document.getElementById('startGame').addEventListener('click', () => {
 function initializeBoard() {
     gameBoard = Array(ROWS).fill(null).map(() => Array(COLS).fill(0));
     gameBoardElement.innerHTML = '';
-    
+
     // Créer les cellules (de haut en bas, gauche à droite)
     for (let row = 0; row < ROWS; row++) {
         for (let col = 0; col < COLS; col++) {
@@ -193,21 +193,21 @@ function initializeBoard() {
             gameBoardElement.appendChild(cell);
         }
     }
-    
+
     // Ajouter les événements sur les indicateurs de colonnes
     document.querySelectorAll('.column-indicator').forEach(indicator => {
-        indicator.addEventListener('click', function() {
+        indicator.addEventListener('click', function () {
             const col = parseInt(this.dataset.col);
             handleCellClick(col);
         });
-        
-        indicator.addEventListener('mouseenter', function() {
+
+        indicator.addEventListener('mouseenter', function () {
             if (gameActive && !isAIThinking) {
                 this.classList.add('active');
             }
         });
-        
-        indicator.addEventListener('mouseleave', function() {
+
+        indicator.addEventListener('mouseleave', function () {
             this.classList.remove('active');
         });
     });
@@ -216,7 +216,7 @@ function initializeBoard() {
 // Gérer le clic sur une colonne
 function handleCellClick(col) {
     if (!gameActive || isAIThinking) return;
-    
+
     // Trouver la première ligne vide de bas en haut
     let row = -1;
     for (let r = ROWS - 1; r >= 0; r--) {
@@ -225,9 +225,9 @@ function handleCellClick(col) {
             break;
         }
     }
-    
+
     if (row === -1) return; // Colonne pleine
-    
+
     // Placer le jeton
     gameBoard[row][col] = currentPlayer;
     const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
@@ -235,30 +235,33 @@ function handleCellClick(col) {
     token.className = `token ${currentPlayer === 1 ? 'red' : 'yellow'}`;
     cell.appendChild(token);
     cell.classList.add('filled');
-    
+
     // Vérifier la victoire
     if (checkWinner(row, col)) {
         endGame(false);
         return;
     }
-    
+
     // Vérifier le match nul
     if (checkDraw()) {
         endGame(true);
         return;
     }
-    
+
     // Changer de joueur
     currentPlayer = currentPlayer === 1 ? 2 : 1;
     updateCurrentPlayer();
-    
+
     // Si c'est le tour de l'IA
     if (gameMode === 'computer' && currentPlayer === 2 && gameActive) {
         isAIThinking = true;
         chatbot.showMessage('aiThinking');
         setTimeout(async () => {
-            await makeAIMove();
-            isAIThinking = false;
+            if (gameActive) {
+                await makeAIMove();
+            } else {
+                isAIThinking = false;
+            }
         }, 500);
     }
 }
@@ -267,7 +270,7 @@ function handleCellClick(col) {
 function updateCurrentPlayer() {
     const currentToken = document.getElementById('currentToken');
     const currentPlayerName = document.getElementById('currentPlayerName');
-    
+
     currentToken.className = `token ${currentPlayer === 1 ? 'red' : 'yellow'}`;
     currentPlayerName.textContent = `Tour de ${currentPlayer === 1 ? player1Name : player2Name}`;
 }
@@ -275,7 +278,7 @@ function updateCurrentPlayer() {
 // Vérifier la victoire
 function checkWinner(row, col) {
     const player = gameBoard[row][col];
-    
+
     // Vérifier horizontal
     if (checkDirection(row, col, 0, 1, player)) return true;
     // Vérifier vertical
@@ -284,49 +287,49 @@ function checkWinner(row, col) {
     if (checkDirection(row, col, 1, 1, player)) return true;
     // Vérifier diagonale \
     if (checkDirection(row, col, 1, -1, player)) return true;
-    
+
     return false;
 }
 
 function checkDirection(row, col, dRow, dCol, player) {
     let count = 1;
-    const winningCells = [{row, col}];
-    
+    const winningCells = [{ row, col }];
+
     // Vérifier dans une direction
     for (let i = 1; i < 4; i++) {
         const newRow = row + dRow * i;
         const newCol = col + dCol * i;
-        if (newRow >= 0 && newRow < ROWS && newCol >= 0 && newCol < COLS && 
+        if (newRow >= 0 && newRow < ROWS && newCol >= 0 && newCol < COLS &&
             gameBoard[newRow][newCol] === player) {
             count++;
-            winningCells.push({row: newRow, col: newCol});
+            winningCells.push({ row: newRow, col: newCol });
         } else {
             break;
         }
     }
-    
+
     // Vérifier dans la direction opposée
     for (let i = 1; i < 4; i++) {
         const newRow = row - dRow * i;
         const newCol = col - dCol * i;
-        if (newRow >= 0 && newRow < ROWS && newCol >= 0 && newCol < COLS && 
+        if (newRow >= 0 && newRow < ROWS && newCol >= 0 && newCol < COLS &&
             gameBoard[newRow][newCol] === player) {
             count++;
-            winningCells.push({row: newRow, col: newCol});
+            winningCells.push({ row: newRow, col: newCol });
         } else {
             break;
         }
     }
-    
+
     if (count >= 4) {
         // Animer les cellules gagnantes
-        winningCells.forEach(({row, col}) => {
+        winningCells.forEach(({ row, col }) => {
             const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
             cell.classList.add('winner');
         });
         return true;
     }
-    
+
     return false;
 }
 
@@ -337,8 +340,13 @@ function checkDraw() {
 
 // IA - Faire un coup
 async function makeAIMove() {
+    if (!gameActive) {
+        isAIThinking = false;
+        return;
+    }
+
     let col;
-    
+
     if (difficulty === 'easy') {
         col = await easyAI(gameBoard, ROWS, COLS);
     } else if (difficulty === 'medium') {
@@ -346,8 +354,75 @@ async function makeAIMove() {
     } else {
         col = hardAI();
     }
-    
-    handleCellClick(col);
+
+    // Vérifier que la colonne est valide
+    if (col === undefined || col === null || col < 0 || col >= COLS) {
+        console.error('Colonne invalide retournée par l\'IA:', col);
+        isAIThinking = false;
+        return;
+    }
+
+    // Vérifier que la colonne n'est pas pleine
+    if (gameBoard[0][col] !== 0) {
+        console.error('La colonne sélectionnée est pleine:', col);
+        isAIThinking = false;
+        return;
+    }
+
+    if (!gameActive) {
+        isAIThinking = false;
+        return;
+    }
+
+    // Trouver la première ligne vide de bas en haut
+    let row = -1;
+    for (let r = ROWS - 1; r >= 0; r--) {
+        if (gameBoard[r][col] === 0) {
+            row = r;
+            break;
+        }
+    }
+
+    if (row === -1) {
+        console.error('Impossible de trouver une ligne vide dans la colonne:', col);
+        isAIThinking = false;
+        return;
+    }
+
+    // Placer le jeton
+    gameBoard[row][col] = currentPlayer;
+    const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+
+    if (!cell) {
+        console.error('Cellule introuvable pour row:', row, 'col:', col);
+        gameBoard[row][col] = 0; // Annuler le coup
+        isAIThinking = false;
+        return;
+    }
+
+    const token = document.createElement('div');
+    token.className = `token ${currentPlayer === 1 ? 'red' : 'yellow'}`;
+    cell.appendChild(token);
+    cell.classList.add('filled');
+
+    // Vérifier la victoire
+    if (checkWinner(row, col)) {
+        endGame(false);
+        isAIThinking = false;
+        return;
+    }
+
+    // Vérifier le match nul
+    if (checkDraw()) {
+        endGame(true);
+        isAIThinking = false;
+        return;
+    }
+
+    // Changer de joueur
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+    updateCurrentPlayer();
+    isAIThinking = false;
 }
 
 // IA Facile - Utilise la fonction du fichier bot-puissance4.js
@@ -358,16 +433,16 @@ function mediumAI() {
     // Essayer de gagner
     const winCol = findWinningMove(2);
     if (winCol !== -1) return winCol;
-    
+
     // 70% de chance de bloquer le joueur
     if (Math.random() < 0.7) {
         const blockCol = findWinningMove(1);
         if (blockCol !== -1) return blockCol;
     }
-    
+
     // Jouer au centre si possible
     if (gameBoard[ROWS - 1][3] === 0) return 3;
-    
+
     // Sinon, coup aléatoire
     return randomMove();
 }
@@ -377,14 +452,14 @@ function hardAI() {
     // Essayer de gagner
     const winCol = findWinningMove(2);
     if (winCol !== -1) return winCol;
-    
+
     // Bloquer le joueur
     const blockCol = findWinningMove(1);
     if (blockCol !== -1) return blockCol;
-    
+
     // Jouer au centre si possible
     if (gameBoard[ROWS - 1][3] === 0) return 3;
-    
+
     // Jouer dans les colonnes centrales (3, 2, 4, 1, 5, 0, 6)
     const preferredCols = [3, 2, 4, 1, 5, 0, 6];
     for (const col of preferredCols) {
@@ -394,7 +469,7 @@ function hardAI() {
             }
         }
     }
-    
+
     return randomMove();
 }
 
@@ -409,23 +484,23 @@ function findWinningMove(player) {
                 break;
             }
         }
-        
+
         if (row === -1) continue; // Colonne pleine
-        
+
         // Simuler le coup
         gameBoard[row][col] = player;
-        
+
         // Vérifier si c'est gagnant
         const isWinning = checkWinner(row, col);
-        
+
         // Annuler le coup
         gameBoard[row][col] = 0;
-        
+
         if (isWinning) {
             return col;
         }
     }
-    
+
     return -1;
 }
 
@@ -437,7 +512,7 @@ function randomMove() {
             availableCols.push(col);
         }
     }
-    
+
     if (availableCols.length === 0) return 0;
     return availableCols[Math.floor(Math.random() * availableCols.length)];
 }
@@ -445,7 +520,7 @@ function randomMove() {
 // Terminer le jeu
 function endGame(isDraw) {
     gameActive = false;
-    
+
     setTimeout(() => {
         if (isDraw) {
             document.getElementById('winnerText').textContent = 'Match nul !';
@@ -454,10 +529,10 @@ function endGame(isDraw) {
         } else {
             const winner = currentPlayer === 1 ? player1Name : player2Name;
             const winnerClass = currentPlayer === 1 ? 'red' : 'yellow';
-            
+
             document.getElementById('winnerText').textContent = `${winner} gagne !`;
             document.getElementById('winnerToken').innerHTML = `<div class="token ${winnerClass}"></div>`;
-            
+
             // Mettre à jour le score
             if (currentPlayer === 1) {
                 scores.player1++;
@@ -466,7 +541,7 @@ function endGame(isDraw) {
                 scores.player2++;
                 document.getElementById('player2Score').textContent = scores.player2;
             }
-            
+
             // Messages du chatbot
             if (gameMode === 'computer') {
                 if (currentPlayer === 1) {
@@ -478,7 +553,7 @@ function endGame(isDraw) {
                 chatbot.showMessage('playerWin');
             }
         }
-        
+
         winnerMessage.style.display = 'flex';
     }, 500);
 }
@@ -505,28 +580,28 @@ document.getElementById('resetGame').addEventListener('click', () => {
 document.getElementById('changeMode').addEventListener('click', () => {
     gameArea.style.display = 'none';
     modeSelection.style.display = 'block';
-    
+
     // Réinitialiser les scores
     scores = { player1: 0, player2: 0 };
-    
+
     // Réinitialiser les champs
     document.getElementById('player1Name').value = '';
     document.getElementById('player2Name').value = '';
-    
+
     chatbot.showMessage('modeSelection');
 });
 
 document.getElementById('homeButton').addEventListener('click', () => {
     gameArea.style.display = 'none';
     homePage.style.display = 'block';
-    
+
     // Réinitialiser les scores
     scores = { player1: 0, player2: 0 };
-    
+
     // Réinitialiser les champs
     document.getElementById('player1Name').value = '';
     document.getElementById('player2Name').value = '';
-    
+
     chatbot.showMessage('welcome');
 });
 

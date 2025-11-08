@@ -1,11 +1,17 @@
 ﻿<!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jeux d'Adam</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
@@ -17,17 +23,50 @@
             justify-content: center;
             padding: 20px;
         }
+
         @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
-        .container { max-width: 1200px; width: 100%; text-align: center; }
-        h1 { color: white; font-size: 3.5rem; margin-bottom: 20px; text-shadow: 0 0 20px rgba(255,255,255,0.5); }
-        .subtitle { color: white; font-size: 1.3rem; margin-bottom: 50px; opacity: 0.9; }
-        .games-container { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: white;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .subtitle {
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 50px;
+            opacity: 0.9;
+        }
+
+        .games-container {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         .game-card {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 40px;
@@ -35,18 +74,34 @@
             text-decoration: none;
             color: white;
             transition: all 0.3s ease;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             cursor: pointer;
         }
+
         .game-card:hover {
             transform: translateY(-10px) scale(1.05);
-            background: rgba(255,255,255,0.25);
-            border-color: rgba(255,255,255,0.4);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
-        .game-icon { font-size: 5rem; margin-bottom: 20px; }
-        .game-title { font-size: 2rem; font-weight: bold; margin-bottom: 15px; }
-        .game-description { font-size: 1.1rem; opacity: 0.9; margin-bottom: 20px; }
+
+        .game-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .game-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
         .play-btn {
             background: white;
             color: #667eea;
@@ -57,31 +112,56 @@
             display: inline-block;
             transition: all 0.3s ease;
         }
-        .game-card:hover .play-btn { transform: scale(1.1); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
+        .game-card:hover .play-btn {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
         @media (max-width: 768px) {
-            h1 { font-size: 2.5rem; }
-            .game-card { width: 100%; max-width: 350px; }
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .game-card {
+                width: 100%;
+                max-width: 350px;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <h1> JEUX D'ADAM</h1>
+        <h1>🎮 JEUX D'ADAM</h1>
         <p class="subtitle">Choisissez votre jeu préféré</p>
         <div class="games-container">
             <a href="morpion.html" class="game-card">
-                <div class="game-icon"></div>
+                <div class="game-icon">❌</div>
                 <div class="game-title">MORPION</div>
                 <div class="game-description">Alignez 3 symboles pour gagner !</div>
-                <div class="play-btn"> JOUER</div>
+                <div class="play-btn">🎮 JOUER</div>
             </a>
             <a href="puissance4.html" class="game-card">
-                <div class="game-icon"></div>
+                <div class="game-icon">🔴</div>
                 <div class="game-title">PUISSANCE 4</div>
                 <div class="game-description">Alignez 4 jetons pour la victoire !</div>
-                <div class="play-btn"> JOUER</div>
+                <div class="play-btn">🎮 JOUER</div>
+            </a>
+            <a href="pendu.html" class="game-card">
+                <div class="game-icon">🎭</div>
+                <div class="game-title">LE PENDU</div>
+                <div class="game-description">Devinez le mot avant d'être pendu !</div>
+                <div class="play-btn">🎮 JOUER</div>
+            </a>
+            <a href="echecs.html" class="game-card">
+                <div class="game-icon">♟️</div>
+                <div class="game-title">ÉCHECS</div>
+                <div class="game-description">Le roi des jeux de stratégie !</div>
+                <div class="play-btn">🎮 JOUER</div>
             </a>
         </div>
     </div>
 </body>
+
 </html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Échecs - Jeu Classique</title>
+    <link rel="stylesheet" href="echecs.css">
+</head>
+
+<body>
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="chatbot" id="chatbot">
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="message">♟️ Bienvenue aux Échecs !</div>
+        </div>
+        <div class="chatbot-avatar">
+            🤖
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Page d'accueil -->
+        <div class="home-page" id="homePage">
+            <h1>♟️ ÉCHECS ♟️</h1>
+            <div class="home-game-card" id="homeGameCard">
+                <div class="mini-chess-board">
+                    <div class="mini-square light">♜</div>
+                    <div class="mini-square dark">♞</div>
+                    <div class="mini-square light">♝</div>
+                    <div class="mini-square dark">♛</div>
+                    <div class="mini-square light">♚</div>
+                    <div class="mini-square dark">♝</div>
+                    <div class="mini-square light">♞</div>
+                    <div class="mini-square dark">♜</div>
+
+                    <div class="mini-square dark">♟</div>
+                    <div class="mini-square light">♟</div>
+                    <div class="mini-square dark">♟</div>
+                    <div class="mini-square light">♟</div>
+                    <div class="mini-square dark">♟</div>
+                    <div class="mini-square light">♟</div>
+                    <div class="mini-square dark">♟</div>
+                    <div class="mini-square light">♟</div>
+                </div>
+                <p class="click-to-play">Cliquez pour jouer !</p>
+            </div>
+        </div>
+
+        <!-- Sélection du mode de jeu -->
+        <div class="mode-selection" id="modeSelection" style="display: none;">
+            <h2>Choisissez votre mode de jeu</h2>
+            <button id="backToHomeMode" class="btn">🏠 Accueil</button>
+            <div class="mode-buttons">
+                <button id="twoPlayersBtn" class="mode-btn">
+                    <span class="mode-icon">👥</span>
+                    <span class="mode-text">2 Joueurs</span>
+                    <span class="mode-desc">Jouez contre un ami</span>
+                </button>
+                <button id="computerBtn" class="mode-btn" disabled title="Bientôt disponible">
+                    <span class="mode-icon">🤖</span>
+                    <span class="mode-text">Contre l'Ordinateur</span>
+                    <span class="mode-desc">Bientôt disponible</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Zone de jeu -->
+        <div class="game-area" id="gameArea" style="display: none;">
+            <div class="game-header">
+                <div class="player-info">
+                    <div class="player-name">⚫ Joueur Noir</div>
+                    <div class="captured-pieces" id="capturedWhite"></div>
+                </div>
+
+                <div class="game-status">
+                    <div class="turn-indicator" id="turnIndicator">
+                        <span id="currentPlayerDisplay">⚪ Tour des Blancs</span>
+                    </div>
+                    <div class="game-message" id="gameMessage"></div>
+                </div>
+
+                <div class="player-info">
+                    <div class="player-name">⚪ Joueur Blanc</div>
+                    <div class="captured-pieces" id="capturedBlack"></div>
+                </div>
+            </div>
+
+            <!-- Échiquier -->
+            <div class="chess-board-container">
+                <div class="coordinates-vertical left">
+                    <div>8</div>
+                    <div>7</div>
+                    <div>6</div>
+                    <div>5</div>
+                    <div>4</div>
+                    <div>3</div>
+                    <div>2</div>
+                    <div>1</div>
+                </div>
+                <div class="board-wrapper">
+                    <div class="chess-board" id="chessBoard"></div>
+                    <div class="coordinates-horizontal">
+                        <div>a</div>
+                        <div>b</div>
+                        <div>c</div>
+                        <div>d</div>
+                        <div>e</div>
+                        <div>f</div>
+                        <div>g</div>
+                        <div>h</div>
+                    </div>
+                </div>
+                <div class="coordinates-vertical right">
+                    <div>8</div>
+                    <div>7</div>
+                    <div>6</div>
+                    <div>5</div>
+                    <div>4</div>
+                    <div>3</div>
+                    <div>2</div>
+                    <div>1</div>
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <button id="resetGame" class="btn">🔄 Nouvelle partie</button>
+                <button id="undoMove" class="btn">↩️ Annuler</button>
+                <button id="homeButton" class="btn">🏠 Accueil</button>
+            </div>
+        </div>
+
+        <!-- Message de fin -->
+        <div class="end-message" id="endMessage" style="display: none;">
+            <div class="end-content">
+                <h2 id="endTitle"></h2>
+                <div id="endEmoji" class="end-emoji"></div>
+                <button id="playAgain" class="btn">Rejouer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="echecs.js"></script>
+</body>
+
+</html>
