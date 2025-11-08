@@ -187,9 +187,11 @@ document.getElementById('startComputerGame').addEventListener('click', () => {
     player1PseudoSolo = document.getElementById('player1NameSolo').value || 'Joueur';
     player1Avatar = player1AvatarSolo;
     player1Pseudo = player1PseudoSolo;
+    gameMode = 'computer';
     
-    // Lancer le jeu avec la difficulté choisie
-    startComputerGame(difficulty);
+    // Aller à la page de tirage au sort
+    avatarSelectionSolo.style.display = 'none';
+    document.getElementById('coinFlip').style.display = 'flex';
 });
 
 // Boutons de difficulté
@@ -219,26 +221,18 @@ document.getElementById('backFromDifficulty').addEventListener('click', () => {
     avatarSelection.style.display = 'block';
 });
 
-function startComputerGame(difficulty) {
+function startComputerGame(difficulty, teamStarts) {
     gameMode = 'computer';
-    avatarSelectionSolo.style.display = 'none';
     gameArea.style.display = 'block';
     
-    // Tirage au sort : quelle équipe commence ?
-    const teamStarts = ['red', 'blue'][Math.floor(Math.random() * 2)];
-    
-    // Déterminer qui commence (joueur ou robot)
+    // Déterminer qui commence
     if (selectedTeam === teamStarts) {
-        // Le joueur commence
         currentPlayer = 1;
         chatbot.showMessage('gameStart');
     } else {
-        // Le robot commence
         currentPlayer = 2;
-        const startingTeam = teamStarts === 'red' ? 'rouge' : 'bleue';
         setTimeout(() => {
             chatbot.showMessage('gameStart');
-            // Le robot joue en premier
             setTimeout(() => {
                 makeAIMove();
             }, 1000);
@@ -345,8 +339,63 @@ startGameBtn.addEventListener('click', () => {
     player1Pseudo = document.getElementById('player1Name').value || 'Joueur 1';
     player2Pseudo = document.getElementById('player2Name').value || 'Joueur 2';
     
+    // Aller à la page de tirage au sort
     avatarSelection.style.display = 'none';
+    document.getElementById('coinFlip').style.display = 'flex';
+});
+
+// Modifier le bouton de tirage pour gérer les 2 modes
+document.getElementById('startFlip').addEventListener('click', () => {
+    const coin = document.getElementById('coin');
+    const flipResult = document.getElementById('flipResult');
+    const startFlipBtn = document.getElementById('startFlip');
+    
+    // Désactiver le bouton pendant l'animation
+    startFlipBtn.disabled = true;
+    flipResult.textContent = '';
+    
+    // Tirage au sort
+    const teamStarts = ['red', 'blue'][Math.floor(Math.random() * 2)];
+    
+    // Animation de la pièce
+    coin.classList.add('flipping');
+    
+    setTimeout(() => {
+        coin.classList.remove('flipping');
+        
+        // Afficher le résultat
+        if (teamStarts === 'red') {
+            coin.style.transform = 'rotateY(0deg)';
+            flipResult.innerHTML = '❌ L\'équipe <span style="color: #e74c3c;">ROUGE</span> commence !';
+        } else {
+            coin.style.transform = 'rotateY(180deg)';
+            flipResult.innerHTML = '⭕ L\'équipe <span style="color: #3498db;">BLEUE</span> commence !';
+        }
+        
+        // Attendre 2 secondes puis lancer le jeu
+        setTimeout(() => {
+            document.getElementById('coinFlip').style.display = 'none';
+            startFlipBtn.disabled = false;
+            coin.style.transform = '';
+            
+            if (gameMode === 'player') {
+                // Mode 2 joueurs
+                start2PlayerGame(teamStarts);
+            } else {
+                // Mode ordinateur
+                startComputerGame(difficulty, teamStarts);
+            }
+        }, 2000);
+        
+    }, 2000);
+});
+
+function start2PlayerGame(teamStarts) {
     gameArea.style.display = 'block';
+    gameMode = 'player';
+    
+    // Rouge commence = joueur 1, Bleu commence = joueur 2
+    currentPlayer = teamStarts === 'red' ? 1 : 2;
     
     // Afficher les avatars dans la zone de jeu
     document.getElementById('player1Avatar').textContent = player1Avatar;
@@ -357,7 +406,7 @@ startGameBtn.addEventListener('click', () => {
     updateCurrentPlayer();
     gameActive = true;
     chatbot.showMessage('gameStart');
-});
+}
 
 // Fonction pour vérifier si il y a 2 symboles alignés
 function checkTwoInLine(symbol) {
