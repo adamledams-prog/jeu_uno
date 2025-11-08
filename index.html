@@ -74,7 +74,10 @@
                     <input type="text" id="player2Name" class="pseudo-input" placeholder="Pseudo (8 lettres max)" maxlength="8">
                 </div>
             </div>
-            <button id="startGame" class="start-btn" disabled>Commencer la partie</button>
+            <div class="game-mode-buttons">
+                <button id="startGame" class="start-btn player-mode" disabled>👥 Jouer à 2</button>
+                <button id="computerButton" class="start-btn computer-mode">🤖 Jouer contre l'ordinateur</button>
+            </div>
         </div>
 
         <!-- Zone de jeu -->
@@ -93,6 +96,10 @@
                     <div class="score-item">
                         <span id="player2Avatar"></span>
                         <span id="player2Score">0</span>
+                    </div>
+                    <div class="timer-container">
+                        <span id="timerIcon">⌛</span>
+                        <span id="timer">10</span>
                     </div>
                 </div>
             </div>
@@ -124,6 +131,26 @@
                 <div id="winnerAvatar" class="winner-avatar"></div>
                 <button id="playAgain" class="btn">Rejouer</button>
             </div>
+        </div>
+
+        <!-- Sélection de la difficulté -->
+        <div class="difficulty-selection" id="difficultySelection" style="display: none;">
+            <h2>Choisissez la difficulté</h2>
+            <div class="difficulty-buttons">
+                <button id="easyMode" class="difficulty-btn">
+                    <span class="difficulty-icon">😊</span>
+                    <span class="difficulty-text">Facile</span>
+                </button>
+                <button id="mediumMode" class="difficulty-btn">
+                    <span class="difficulty-icon">🤔</span>
+                    <span class="difficulty-text">Moyen</span>
+                </button>
+                <button id="hardMode" class="difficulty-btn">
+                    <span class="difficulty-icon">😈</span>
+                    <span class="difficulty-text">Difficile</span>
+                </button>
+            </div>
+            <button id="backFromDifficulty" class="btn">↩️ Retour</button>
         </div>
     </div>
 

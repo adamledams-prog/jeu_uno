@@ -250,18 +250,34 @@ h1 {
     border-color: #e74c3c;
 }
 
-.start-btn {
+.game-mode-buttons {
+    display: flex;
+    gap: 20px;
     width: 100%;
+    margin-top: 30px;
+}
+
+.start-btn {
+    flex: 1;
     padding: 15px;
     font-size: 1.2rem;
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-    color: white;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    min-width: 200px;
+}
+
+.start-btn.player-mode {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+}
+
+.start-btn.computer-mode {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
 }
 
 @keyframes buttonGlow {
@@ -280,9 +296,17 @@ h1 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.start-btn:disabled {
+.start-btn.player-mode:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.start-btn.computer-mode:hover {
+    background: linear-gradient(135deg, #2980b9 0%, #2472a4 100%);
+}
+
+.start-btn.player-mode:hover:not(:disabled) {
+    background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
 }
 
 /* Zone de jeu */
@@ -341,6 +365,35 @@ h1 {
 
 .score-item span:first-child {
     font-size: 2rem;
+}
+
+.timer-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 15px;
+    border-radius: 20px;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+#timerIcon {
+    font-size: 1.5rem;
+}
+
+#timer {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #e74c3c;
+    min-width: 30px;
+    text-align: center;
 }
 
 /* Grille de jeu */
@@ -581,6 +634,91 @@ h1 {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.difficulty-selection {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: modalFadeIn 0.3s ease;
+}
+
+.difficulty-selection h2 {
+    color: #2c3e50;
+    font-size: 2rem;
+    margin-bottom: 40px;
+}
+
+.difficulty-buttons {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.difficulty-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 40px;
+    border: none;
+    border-radius: 15px;
+    background: white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.difficulty-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.difficulty-icon {
+    font-size: 2.5rem;
+}
+
+.difficulty-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+#easyMode {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+#mediumMode {
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+}
+
+#hardMode {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+#easyMode, #mediumMode, #hardMode {
+    color: white;
+}
+
+#easyMode .difficulty-text,
+#mediumMode .difficulty-text,
+#hardMode .difficulty-text {
+    color: white;
+}
+
+#backFromDifficulty {
+    margin-top: 20px;
 }
 
 /* Responsive */
