@@ -1,0 +1,656 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+/* Particules d'arrière-plan */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: float 15s infinite;
+}
+
+.particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.particle:nth-child(2) { left: 30%; animation-delay: 2s; }
+.particle:nth-child(3) { left: 50%; animation-delay: 4s; }
+.particle:nth-child(4) { left: 70%; animation-delay: 1s; }
+.particle:nth-child(5) { left: 90%; animation-delay: 3s; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
+    50% { opacity: 1; }
+}
+
+/* Chatbot */
+.chatbot {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 20px;
+    padding: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-width: 300px;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.chatbot-messages {
+    margin-bottom: 10px;
+}
+
+.chatbot-messages .message {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.chatbot-avatar {
+    font-size: 2rem;
+    text-align: center;
+}
+
+/* Container principal */
+.container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1400px;
+    padding: 20px;
+}
+
+/* Page d'accueil */
+.home-page {
+    text-align: center;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.home-page h1 {
+    color: white;
+    font-size: 4rem;
+    margin-bottom: 30px;
+    text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+    animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.home-game-card {
+    background: white;
+    border-radius: 20px;
+    padding: 60px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    margin: 0 auto;
+    max-width: 400px;
+}
+
+.home-game-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.uno-logo {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.card-mini {
+    width: 70px;
+    height: 100px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    animation: cardFloat 2s ease-in-out infinite;
+}
+
+.card-mini:nth-child(1) { animation-delay: 0s; }
+.card-mini:nth-child(2) { animation-delay: 0.2s; }
+.card-mini:nth-child(3) { animation-delay: 0.4s; }
+.card-mini:nth-child(4) { animation-delay: 0.6s; }
+
+@keyframes cardFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* Sélection du mode */
+.mode-selection, .difficulty-selection, .player-selection {
+    text-align: center;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.5s ease-in;
+}
+
+.mode-selection h2, .difficulty-selection h2, .player-selection h2 {
+    color: #667eea;
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+.mode-buttons, .difficulty-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.mode-btn, .difficulty-btn {
+    background: white;
+    border: 3px solid #667eea;
+    border-radius: 15px;
+    padding: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+}
+
+.mode-btn:hover, .difficulty-btn:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.mode-icon, .difficulty-icon {
+    display: block;
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.mode-text, .difficulty-text {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.mode-desc {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Configuration des joueurs */
+.players-config {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.player-config {
+    flex: 1;
+    min-width: 250px;
+}
+
+.player-config h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.pseudo-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.pseudo-input:focus {
+    outline: none;
+    border-color: #764ba2;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+}
+
+/* Boutons */
+.btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 10px;
+}
+
+.btn:hover {
+    background: #764ba2;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.start-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 20px 40px;
+    border-radius: 15px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 20px;
+}
+
+.start-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Zone de jeu */
+.game-area {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.game-header {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.opponent-info, .current-player-info {
+    flex: 1;
+    min-width: 200px;
+}
+
+.player-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.cards-count {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.score {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+/* Centre du jeu */
+.game-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+}
+
+.deck-container {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+
+.deck, .discard-pile {
+    width: 120px;
+    height: 160px;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.deck {
+    background: #667eea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.deck::before {
+    content: '';
+    position: absolute;
+    width: 115px;
+    height: 155px;
+    background: #764ba2;
+    border-radius: 10px;
+    top: -5px;
+    left: -5px;
+    z-index: -1;
+}
+
+.deck::after {
+    content: '';
+    position: absolute;
+    width: 110px;
+    height: 150px;
+    background: #5a67d8;
+    border-radius: 10px;
+    top: -10px;
+    left: -10px;
+    z-index: -2;
+}
+
+.deck:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.deck.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.deck.disabled:hover {
+    transform: none;
+}
+
+.card.back {
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        45deg,
+        #667eea,
+        #667eea 10px,
+        #764ba2 10px,
+        #764ba2 20px
+    );
+    border-radius: 10px;
+    border: 3px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+}
+
+.card.back::before {
+    content: '🎴';
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.discard-pile {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+}
+
+/* Cartes */
+.card {
+    width: 100px;
+    height: 140px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border: 3px solid white;
+    transform: translateY(0);
+}
+
+.card:not(.disabled) {
+    transform: translateY(-15px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.card:hover:not(.disabled) {
+    transform: translateY(-25px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+}
+
+.card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: translateY(0);
+}
+
+.card.disabled:hover {
+    transform: translateY(0);
+}
+
+/* Couleurs des cartes */
+.card.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.card.yellow { background: linear-gradient(135deg, #f39c12, #d68910); }
+.card.green { background: linear-gradient(135deg, #27ae60, #229954); }
+.card.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
+.card.wild { background: linear-gradient(135deg, #34495e, #2c3e50); }
+
+/* Main du joueur */
+.player-hand {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    min-height: 200px;
+}
+
+/* Animation de distribution des cartes */
+@keyframes dealCard {
+    0% {
+        transform: translateX(-500px) translateY(-300px) rotate(-45deg) scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+        opacity: 1;
+    }
+}
+
+.card.dealing {
+    animation: dealCard 0.6s ease-out forwards;
+}
+
+/* Sélecteur de couleur */
+.color-selector {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    animation: zoomIn 0.3s ease-out;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.color-selector h3 {
+    color: #667eea;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.color-options {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.color-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 15px;
+    border: 3px solid white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.color-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.color-btn.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.color-btn.yellow { background: linear-gradient(135deg, #f39c12, #d68910); }
+.color-btn.green { background: linear-gradient(135deg, #27ae60, #229954); }
+.color-btn.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
+
+/* Contrôles de jeu */
+.game-controls {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Message de victoire */
+.winner-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.winner-content {
+    background: white;
+    border-radius: 20px;
+    padding: 60px;
+    text-align: center;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+    animation: zoomIn 0.5s ease-out;
+}
+
+.winner-content h2 {
+    color: #667eea;
+    font-size: 3rem;
+    margin-bottom: 30px;
+}
+
+.winner-cards {
+    font-size: 5rem;
+    margin-bottom: 30px;
+    animation: spin 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .home-page h1 {
+        font-size: 2.5rem;
+    }
+
+    .game-header {
+        flex-direction: column;
+    }
+
+    .player-hand {
+        padding: 15px;
+    }
+
+    .card {
+        width: 80px;
+        height: 112px;
+        font-size: 1.5rem;
+    }
+
+    .chatbot {
+        top: 10px;
+        right: 10px;
+        max-width: 250px;
+    }
+}
