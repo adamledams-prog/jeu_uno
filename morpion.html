@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morpion avec Avatars</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    <div class="chatbot" id="chatbot">
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="message">👋 Bienvenue !</div>
+        </div>
+        <div class="chatbot-avatar">
+            🤖
+        </div>
+    </div>
+    <div class="container">
+        <!-- Page d'accueil -->
+        <div class="home-page" id="homePage">
+            <div class="home-game-card" id="homeGameCard">
+                <div class="mini-board">
+                    <div class="mini-cell"><span style="color: #3498db !important;">⭕</span></div>
+                    <div class="mini-cell"><span style="color: #3498db !important;">⭕</span></div>
+                    <div class="mini-cell"><span style="color: #3498db !important;">⭕</span></div>
+                    <div class="mini-cell"><span style="color: #3498db !important;">⭕</span></div>
+                    <div class="mini-cell empty"></div>
+                    <div class="mini-cell"><span style="color: #e74c3c;">❌</span></div>
+                    <div class="mini-cell"><span style="color: #e74c3c;">❌</span></div>
+                    <div class="mini-cell"><span style="color: #e74c3c;">❌</span></div>
+                    <div class="mini-cell"><span style="color: #e74c3c;">❌</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sélection des avatars -->
+        <div class="avatar-selection" id="avatarSelection" style="display: none;">
+            <h2>Choisissez vos avatars</h2>
+            <button id="backToHome" class="btn home-btn">🏠 Accueil</button>
+            <div class="player-setup">
+                <div class="player-config">
+                    <h3>Joueur 1</h3>
+                    <div class="avatar-options">
+                        <button class="avatar-btn" data-player="1" data-avatar="🐱">🐱</button>
+                        <button class="avatar-btn" data-player="1" data-avatar="🐶">🐶</button>
+                        <button class="avatar-btn" data-player="1" data-avatar="🦁">🦁</button>
+                        <button class="avatar-btn" data-player="1" data-avatar="🐼">🐼</button>
+                        <button class="avatar-btn" data-player="1" data-avatar="🦊">🦊</button>
+                        <button class="avatar-btn" data-player="1" data-avatar="🐯">🐯</button>
+                        <button class="avatar-btn" data-player="1" data-avatar="🐺">🐺</button>
+                    </div>
+                    <div class="selected-avatar" id="player1Selected">Choisissez...</div>
+                    <input type="text" id="player1Name" class="pseudo-input" placeholder="Pseudo (8 lettres max)" maxlength="8">
+                </div>
+                
+                <div class="player-config">
+                    <h3>Joueur 2</h3>
+                    <div class="avatar-options">
+                        <button class="avatar-btn" data-player="2" data-avatar="🐸">🐸</button>
+                        <button class="avatar-btn" data-player="2" data-avatar="🦄">🦄</button>
+                        <button class="avatar-btn" data-player="2" data-avatar="🐙">🐙</button>
+                        <button class="avatar-btn" data-player="2" data-avatar="🦋">🦋</button>
+                        <button class="avatar-btn" data-player="2" data-avatar="🐢">🐢</button>
+                        <button class="avatar-btn" data-player="2" data-avatar="🦎">🦎</button>
+                        <button class="avatar-btn" data-player="2" data-avatar="🐊">🐊</button>
+                    </div>
+                    <div class="selected-avatar" id="player2Selected">Choisissez...</div>
+                    <input type="text" id="player2Name" class="pseudo-input" placeholder="Pseudo (8 lettres max)" maxlength="8">
+                </div>
+            </div>
+            <div class="game-mode-buttons">
+                <button id="startGame" class="start-btn player-mode" disabled>👥 Jouer à 2</button>
+                <button id="computerButton" class="start-btn computer-mode">🤖 Jouer contre l'ordinateur</button>
+            </div>
+        </div>
+
+        <!-- Sélection avatar solo (mode ordinateur) -->
+        <div class="avatar-selection-solo" id="avatarSelectionSolo" style="display: none;">
+            <h2>Choisissez votre avatar</h2>
+            <button id="backToHomeSolo" class="btn home-btn">🏠 Accueil</button>
+            <div class="player-setup-solo">
+                <div class="player-config">
+                    <h3>Joueur 1</h3>
+                    <div class="avatar-options">
+                        <button class="avatar-btn-solo" data-avatar="🐱">🐱</button>
+                        <button class="avatar-btn-solo" data-avatar="🐶">🐶</button>
+                        <button class="avatar-btn-solo" data-avatar="🦁">🦁</button>
+                        <button class="avatar-btn-solo" data-avatar="🐼">🐼</button>
+                        <button class="avatar-btn-solo" data-avatar="🦊">🦊</button>
+                        <button class="avatar-btn-solo" data-avatar="🐯">🐯</button>
+                        <button class="avatar-btn-solo" data-avatar="🐺">🐺</button>
+                    </div>
+                    <div class="selected-avatar" id="player1SelectedSolo">Choisissez...</div>
+                    <input type="text" id="player1NameSolo" class="pseudo-input" placeholder="Pseudo (8 lettres max)" maxlength="8">
+                    
+                    <div class="team-selection">
+                        <h4>Choisissez votre équipe</h4>
+                        <div class="team-buttons">
+                            <button class="team-btn team-red" id="teamRedBtn">
+                                <span style="font-size: 2rem;">❌</span>
+                                <span>Équipe Rouge</span>
+                            </button>
+                            <button class="team-btn team-blue" id="teamBlueBtn">
+                                <span style="font-size: 2rem;">⭕</span>
+                                <span>Équipe Bleue</span>
+                            </button>
+                        </div>
+                        <div class="selected-team" id="selectedTeam">Choisissez votre équipe...</div>
+                    </div>
+                </div>
+            </div>
+            <button id="startComputerGame" class="start-btn computer-mode" disabled>🎮 Commencer</button>
+        </div>
+
+        <!-- Page de tirage au sort -->
+        <div class="coin-flip" id="coinFlip" style="display: none;">
+            <h2>Tirage au sort</h2>
+            <div class="coin-container">
+                <div class="coin" id="coin">
+                    <div class="coin-side coin-red">❌</div>
+                    <div class="coin-side coin-blue">⭕</div>
+                </div>
+            </div>
+            <div class="flip-result" id="flipResult"></div>
+            <button id="startFlip" class="start-btn computer-mode">🎲 Lancer le tirage</button>
+        </div>
+
+        <!-- Zone de jeu -->
+        <div class="game-area" id="gameArea" style="display: none;">
+            <div class="game-info">
+                <div class="player-turn">
+                    <span>Tour de: </span>
+                    <span id="currentPlayer" class="current-avatar"></span>
+                    <span id="playerName"></span>
+                </div>
+                <div class="score">
+                    <div class="score-item">
+                        <span id="player1Avatar"></span>
+                        <span id="player1Score">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span id="player2Avatar"></span>
+                        <span id="player2Score">0</span>
+                    </div>
+                    <div class="timer-container">
+                        <span id="timerIcon">⌛</span>
+                        <span id="timer">10</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grille de jeu -->
+            <div class="game-board" id="gameBoard">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+
+            <div class="game-controls">
+                <button id="resetGame" class="btn">🔄 Nouvelle partie</button>
+                <button id="changeAvatars" class="btn">👥 Changer les avatars</button>
+                <button id="homeButton" class="btn">🏠 Accueil</button>
+            </div>
+        </div>
+
+        <!-- Message de victoire -->
+        <div class="winner-message" id="winnerMessage" style="display: none;">
+            <div class="winner-content">
+                <h2 id="winnerText"></h2>
+                <div id="winnerAvatar" class="winner-avatar"></div>
+                <button id="playAgain" class="btn">Rejouer</button>
+            </div>
+        </div>
+
+        <!-- Sélection de la difficulté -->
+        <div class="difficulty-selection" id="difficultySelection" style="display: none;">
+            <h2>Choisissez la difficulté</h2>
+            <div class="difficulty-buttons">
+                <button id="easyMode" class="difficulty-btn">
+                    <span class="difficulty-icon">😊</span>
+                    <span class="difficulty-text">Facile</span>
+                </button>
+                <button id="mediumMode" class="difficulty-btn">
+                    <span class="difficulty-icon">🤔</span>
+                    <span class="difficulty-text">Moyen</span>
+                </button>
+                <button id="hardMode" class="difficulty-btn">
+                    <span class="difficulty-icon">😈</span>
+                    <span class="difficulty-text">Difficile</span>
+                </button>
+            </div>
+            <button id="backFromDifficulty" class="btn">↩️ Retour</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
