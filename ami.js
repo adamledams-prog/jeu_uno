@@ -8,20 +8,29 @@ let invitations = [];
 let pendingFriendCode = '';
 let currentTab = 'friends';
 let pendingInvitationIndex = -1;
+let userHasInteracted = false;
 
 // Fonction utilitaire pour vibration sécurisée
 function safeVibrate(pattern) {
+    // Ne tenter la vibration que si l'utilisateur a déjà interagi
+    if (!userHasInteracted) return;
+    
     try {
         if ('vibrate' in navigator) {
             navigator.vibrate(pattern);
         }
     } catch (e) {
-        // Ignorer les erreurs de vibration
+        // Ignorer silencieusement les erreurs de vibration
     }
 }
 
 // Initialisation au chargement de la page
 window.addEventListener('load', () => {
+    // Détecter la première interaction utilisateur (après le chargement)
+    document.addEventListener('click', () => { userHasInteracted = true; }, { once: true });
+    document.addEventListener('touchstart', () => { userHasInteracted = true; }, { once: true });
+    document.addEventListener('keydown', () => { userHasInteracted = true; }, { once: true });
+    
     initializeFriendSystem();
 });
 
@@ -52,11 +61,10 @@ function initializeFriendSystem() {
     // Charger les invitations
     loadInvitations();
     
-    // Afficher l'onglet actif
-    switchTab('friends');
+    // Afficher l'onglet actif (sans vibration au chargement initial)
+    switchTab('friends', false);
     
-    // Vibration de bienvenue
-    safeVibrate([100, 50, 100]);
+    // Note: Vibration désactivée au chargement (nécessite interaction utilisateur)
 }
 
 // ============================================
@@ -83,7 +91,7 @@ function generateQRCode(code) {
 // GESTION DES ONGLETS
 // ============================================
 
-function switchTab(tab) {
+function switchTab(tab, shouldVibrate = true) {
     currentTab = tab;
     
     // Mise à jour des boutons d'onglets
@@ -106,7 +114,10 @@ function switchTab(tab) {
         document.getElementById('profileContent').classList.add('active');
     }
     
-    safeVibrate(30);
+    // Vibrer seulement si demandé (pas au chargement initial)
+    if (shouldVibrate) {
+        safeVibrate(30);
+    }
 }
 
 // ============================================
