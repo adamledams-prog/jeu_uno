@@ -22,6 +22,21 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
 
         @keyframes gradient {
@@ -38,31 +53,294 @@
             }
         }
 
+        /* Particules flottantes */
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-particle {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.6;
+            animation: floatUpDown 15s infinite ease-in-out;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+        }
+
+        @keyframes floatUpDown {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(-20vh) rotate(360deg) scale(1);
+            }
+        }
+
         .container {
             max-width: 1200px;
             width: 100%;
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
 
         h1 {
             color: white;
             font-size: 3.5rem;
             margin-bottom: 20px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5),
+                         0 0 40px rgba(255, 255, 255, 0.3),
+                         0 5px 15px rgba(0, 0, 0, 0.2);
+            animation: titlePulse 3s ease-in-out infinite;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.5),
+                             0 0 40px rgba(255, 255, 255, 0.3),
+                             0 5px 15px rgba(0, 0, 0, 0.2);
+                transform: scale(1);
+            }
+            50% {
+                text-shadow: 0 0 30px rgba(255, 255, 255, 0.8),
+                             0 0 60px rgba(255, 255, 255, 0.5),
+                             0 8px 20px rgba(0, 0, 0, 0.3);
+                transform: scale(1.02);
+            }
         }
 
         .subtitle {
             color: white;
             font-size: 1.3rem;
             margin-bottom: 50px;
+            opacity: 0.95;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 0.95;
+                transform: translateY(0);
+            }
+        }
+
+        /* Menu principal */
+        .main-menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            animation: fadeIn 0.8s ease-out 0.5s both;
+        }
+
+        .main-games-btn {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(15px);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-radius: 40px;
+            padding: 60px 80px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-games-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transform: rotate(45deg);
+            transition: all 0.8s ease;
+        }
+
+        .main-games-btn:hover::before {
+            left: 100%;
+        }
+
+        .main-games-btn:hover {
+            transform: scale(1.15) translateY(-10px);
+            background: rgba(255, 255, 255, 0.35);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4),
+                        0 0 50px rgba(255, 255, 255, 0.3);
+        }
+
+        .main-games-btn:active {
+            transform: scale(1.1) translateY(-5px);
+        }
+
+        .btn-icon {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .btn-text {
+            color: white;
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            margin-bottom: 10px;
+        }
+
+        .btn-count {
+            color: white;
+            font-size: 1.2rem;
             opacity: 0.9;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            font-weight: 600;
+        }
+
+        /* Bouton retour */
+        .back-btn {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            padding: 15px 30px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #667eea;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            width: fit-content;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .back-btn:active {
+            transform: translateY(-2px) scale(1.02);
         }
 
         .games-container {
+            display: none;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+            position: relative;
+        }
+
+        .games-container.show {
+            display: flex;
+            animation: slideInUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .games-container .back-btn {
+            position: absolute;
+            top: -70px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Section des jeux */
+        .games-section {
+            width: 100%;
+            text-align: center;
+        }
+
+        .games-section .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .games-grid {
             display: flex;
             gap: 40px;
             justify-content: center;
             flex-wrap: wrap;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
         .game-card {
@@ -73,49 +351,350 @@
             width: 300px;
             text-decoration: none;
             color: white;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 2px solid rgba(255, 255, 255, 0.2);
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: cardSlideIn 0.6s ease-out both;
+        }
+
+        @keyframes cardSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .game-card:nth-child(1) { animation-delay: 0.1s; }
+        .game-card:nth-child(2) { animation-delay: 0.2s; }
+        .game-card:nth-child(3) { animation-delay: 0.3s; }
+        .game-card:nth-child(4) { animation-delay: 0.4s; }
+        .game-card:nth-child(5) { animation-delay: 0.5s; }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+        }
+
+        .game-card:hover::before {
+            left: 100%;
         }
 
         .game-card:hover {
-            transform: translateY(-10px) scale(1.05);
+            transform: translateY(-15px) scale(1.08);
             background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4),
+                        0 0 30px rgba(255, 255, 255, 0.2);
         }
 
         .game-icon {
             font-size: 5rem;
             margin-bottom: 20px;
+            transition: all 0.4s ease;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+            display: inline-block;
+        }
+
+        .game-card:hover .game-icon {
+            transform: scale(1.2) rotate(5deg);
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5));
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: scale(1.2) rotate(5deg) translateY(0);
+            }
+            50% {
+                transform: scale(1.2) rotate(5deg) translateY(-10px);
+            }
         }
 
         .game-title {
             font-size: 2rem;
             font-weight: bold;
             margin-bottom: 15px;
+            transition: all 0.3s ease;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-card:hover .game-title {
+            transform: scale(1.05);
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
         .game-description {
             font-size: 1.1rem;
             opacity: 0.9;
             margin-bottom: 20px;
+            transition: all 0.3s ease;
+            line-height: 1.5;
+        }
+
+        .game-card:hover .game-description {
+            opacity: 1;
         }
 
         .play-btn {
-            background: white;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
             color: #667eea;
             padding: 12px 30px;
             border-radius: 25px;
             font-weight: bold;
             font-size: 1.1rem;
             display: inline-block;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
         }
 
         .game-card:hover .play-btn {
+            transform: scale(1.15) translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .game-card:hover .play-btn::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Bouton palette de dessin */
+        .paint-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            padding: 14px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #667eea;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            animation: slideInLeft 0.5s ease;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .paint-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+            background: linear-gradient(135deg, #ffffff, rgba(255, 255, 255, 0.95));
+            border-color: #667eea;
+        }
+
+        .paint-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        /* Modal de dessin */
+        .paint-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .paint-modal.active {
+            display: flex;
+        }
+
+        .paint-container {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 95%;
+            max-height: 95vh;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .paint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .paint-header h2 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .paint-tools {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tool-label {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 0.9rem;
+        }
+
+        .color-picker {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .color-picker:hover {
             transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .brush-size {
+            width: 150px;
+            height: 40px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .size-display {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            color: #667eea;
+            min-width: 60px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .tool-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .tool-btn:active {
+            transform: translateY(0);
+        }
+
+        .tool-btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .tool-btn.success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .canvas-wrapper {
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+            max-height: 60vh;
+        }
+
+        #drawingCanvas {
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            cursor: crosshair;
+            display: block;
+            margin: 0 auto;
+            touch-action: none;
+        }
+
+        .paint-footer {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
         }
 
         .share-container {
@@ -139,7 +718,7 @@
             }
         }
 
-        .share-btn, .qr-btn {
+        .share-btn, .qr-btn, .ami-btn {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
             backdrop-filter: blur(15px);
             border: 2px solid rgba(255, 255, 255, 0.5);
@@ -158,7 +737,7 @@
             overflow: hidden;
         }
 
-        .share-btn::before, .qr-btn::before {
+        .share-btn::before, .qr-btn::before, .ami-btn::before {
             content: '';
             position: absolute;
             top: 0;
@@ -169,19 +748,50 @@
             transition: left 0.5s;
         }
 
-        .share-btn:hover::before, .qr-btn:hover::before {
+        .share-btn:hover::before, .qr-btn:hover::before, .ami-btn:hover::before {
             left: 100%;
         }
 
-        .share-btn:hover, .qr-btn:hover {
+        .share-btn:hover, .qr-btn:hover, .ami-btn:hover {
             transform: translateY(-5px) scale(1.05);
             box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
             background: linear-gradient(135deg, #ffffff, rgba(255, 255, 255, 0.95));
             border-color: #667eea;
         }
 
-        .share-btn:active, .qr-btn:active {
+        .share-btn:active, .qr-btn:active, .ami-btn:active {
             transform: translateY(-2px) scale(1.02);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+            border-radius: 50%;
+            min-width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.6);
+            animation: badgePulse 2s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 12px rgba(255, 107, 107, 0.6);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 6px 18px rgba(255, 107, 107, 0.9);
+            }
         }
 
         .qr-modal {
@@ -191,8 +801,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px) saturate(180%);
             z-index: 2000;
             justify-content: center;
             align-items: center;
@@ -224,10 +834,33 @@
             padding: 40px 30px;
             border-radius: 30px;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4),
+                        0 0 0 1px rgba(255, 255, 255, 0.8) inset;
             max-width: 90%;
             animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 3px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(102, 126, 234, 0.1),
+                transparent
+            );
+            transition: left 0.7s ease;
+        }
+
+        .qr-content:hover::before {
+            left: 100%;
         }
 
         .qr-content h2 {
@@ -238,12 +871,32 @@
             margin-bottom: 10px;
             font-size: 1.8rem;
             font-weight: 700;
+            animation: titleShine 3s ease-in-out infinite;
+        }
+
+        @keyframes titleShine {
+            0%, 100% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(1.3);
+            }
         }
 
         .qr-subtitle {
             color: #666;
             font-size: 0.95rem;
             margin-bottom: 25px;
+            animation: subtitleFade 2s ease-in-out infinite;
+        }
+
+        @keyframes subtitleFade {
+            0%, 100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
         }
 
         .qr-code-wrapper {
@@ -253,6 +906,23 @@
             display: inline-block;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             margin: 10px 0;
+            transition: all 0.3s ease;
+            animation: qrPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes qrPulse {
+            0%, 100% {
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            }
+            50% {
+                box-shadow: 0 8px 35px rgba(102, 126, 234, 0.3),
+                            0 0 20px rgba(102, 126, 234, 0.2);
+            }
+        }
+
+        .qr-code-wrapper:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.3);
         }
 
         .qr-content img {
@@ -260,6 +930,11 @@
             max-width: 220px;
             border-radius: 15px;
             display: block;
+            transition: all 0.3s ease;
+        }
+
+        .qr-content img:hover {
+            transform: scale(1.1);
         }
 
         .qr-url {
@@ -270,6 +945,13 @@
             padding: 10px;
             background: rgba(102, 126, 234, 0.05);
             border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .qr-url:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.3);
         }
 
         .close-qr {
@@ -284,6 +966,26 @@
             margin-top: 20px;
             transition: all 0.3s ease;
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .close-qr::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .close-qr:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .close-qr:hover {
@@ -298,11 +1000,114 @@
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5rem;
+                letter-spacing: 1px;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .main-menu {
+                min-height: 300px;
+            }
+
+            .main-games-btn {
+                padding: 50px 60px;
+                border-radius: 30px;
+            }
+
+            .btn-icon {
+                font-size: 4.5rem;
+            }
+
+            .btn-text {
+                font-size: 2.2rem;
+                letter-spacing: 3px;
+            }
+
+            .btn-count {
+                font-size: 1rem;
+            }
+
+            .back-btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+                margin-bottom: 25px;
+            }
+
+            .games-grid {
+                gap: 30px;
             }
 
             .game-card {
                 width: 100%;
                 max-width: 350px;
+                padding: 35px;
+            }
+
+            .game-icon {
+                font-size: 4rem;
+            }
+
+            .game-title {
+                font-size: 1.8rem;
+            }
+
+            .game-description {
+                font-size: 1rem;
+            }
+
+            .floating-particle {
+                font-size: 1.5rem;
+            }
+
+            .paint-btn {
+                top: 15px;
+                left: 15px;
+                padding: 12px 18px;
+                font-size: 0.9rem;
+            }
+
+            .paint-container {
+                padding: 20px;
+                max-width: 98%;
+            }
+
+            .paint-header h2 {
+                font-size: 1.4rem;
+            }
+
+            .paint-tools {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .tool-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .brush-size {
+                width: 120px;
+            }
+
+            #drawingCanvas {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .canvas-wrapper {
+                max-height: 50vh;
+            }
+
+            .paint-footer {
+                flex-direction: column;
+            }
+
+            .tool-btn {
+                width: 100%;
+                padding: 10px 15px;
             }
 
             .share-container {
@@ -311,7 +1116,7 @@
                 gap: 8px;
             }
 
-            .share-btn, .qr-btn {
+            .share-btn, .qr-btn, .ami-btn {
                 padding: 12px 18px;
                 font-size: 0.9rem;
                 border-radius: 15px;
@@ -342,8 +1147,103 @@
         }
 
         @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
             .subtitle {
-                font-size: 1rem;
+                font-size: 0.95rem;
+            }
+
+            .main-menu {
+                min-height: 250px;
+            }
+
+            .main-games-btn {
+                padding: 40px 50px;
+                border-radius: 25px;
+            }
+
+            .btn-icon {
+                font-size: 3.5rem;
+                margin-bottom: 15px;
+            }
+
+            .btn-text {
+                font-size: 1.8rem;
+                letter-spacing: 2px;
+            }
+
+            .btn-count {
+                font-size: 0.9rem;
+            }
+
+            .back-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+                margin-bottom: 20px;
+            }
+
+            .games-grid {
+                gap: 25px;
+            }
+
+            .game-card {
+                padding: 30px 25px;
+            }
+
+            .game-icon {
+                font-size: 3.5rem;
+            }
+
+            .floating-particle {
+                font-size: 1.2rem;
+            }
+
+            .paint-btn {
+                top: 10px;
+                left: 10px;
+                padding: 10px 14px;
+                font-size: 0.85rem;
+                gap: 5px;
+            }
+
+            .paint-container {
+                padding: 15px;
+            }
+
+            .paint-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .paint-tools {
+                padding: 10px;
+                gap: 8px;
+            }
+
+            .color-picker {
+                width: 40px;
+                height: 40px;
+            }
+
+            .brush-size {
+                width: 100px;
+            }
+
+            .size-display {
+                padding: 6px 10px;
+                min-width: 50px;
+                font-size: 0.85rem;
+            }
+
+            .tool-btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
+            #drawingCanvas {
+                width: 100%;
+                height: auto;
             }
 
             .share-container {
@@ -352,7 +1252,7 @@
                 gap: 6px;
             }
 
-            .share-btn, .qr-btn {
+            .share-btn, .qr-btn, .ami-btn {
                 padding: 10px 14px;
                 font-size: 0.85rem;
                 gap: 6px;
@@ -391,8 +1291,69 @@
 </head>
 
 <body>
+    <!-- Particules flottantes -->
+    <div class="floating-particles">
+        <div class="floating-particle" style="left: 10%; animation-delay: 0s;">🎮</div>
+        <div class="floating-particle" style="left: 20%; animation-delay: 2s;">🎯</div>
+        <div class="floating-particle" style="left: 30%; animation-delay: 4s;">🎲</div>
+        <div class="floating-particle" style="left: 40%; animation-delay: 1s;">⭐</div>
+        <div class="floating-particle" style="left: 50%; animation-delay: 3s;">✨</div>
+        <div class="floating-particle" style="left: 60%; animation-delay: 5s;">🎪</div>
+        <div class="floating-particle" style="left: 70%; animation-delay: 2.5s;">🎨</div>
+        <div class="floating-particle" style="left: 80%; animation-delay: 4.5s;">🌟</div>
+        <div class="floating-particle" style="left: 90%; animation-delay: 1.5s;">💫</div>
+    </div>
+
+    <!-- Bouton Palette de dessin -->
+    <button class="paint-btn" onclick="openPaintModal()">
+        <span>🎨</span>
+        <span>Dessiner</span>
+    </button>
+
+    <!-- Modal de dessin -->
+    <div class="paint-modal" id="paintModal" onclick="closePaintModal()">
+        <div class="paint-container" onclick="event.stopPropagation()">
+            <div class="paint-header">
+                <h2>🎨 Tableau Blanc</h2>
+                <button class="tool-btn danger" onclick="closePaintModal()">✖ Fermer</button>
+            </div>
+
+            <div class="paint-tools">
+                <div class="tool-group">
+                    <span class="tool-label">Couleur :</span>
+                    <input type="color" id="colorPicker" class="color-picker" value="#667eea">
+                </div>
+
+                <div class="tool-group">
+                    <span class="tool-label">Taille :</span>
+                    <input type="range" id="brushSize" class="brush-size" min="1" max="50" value="5">
+                    <span class="size-display" id="sizeDisplay">5px</span>
+                </div>
+
+                <div class="tool-group">
+                    <button class="tool-btn" onclick="setPenMode()">🖊️ Pinceau</button>
+                    <button class="tool-btn" onclick="setEraserMode()">🧹 Gomme</button>
+                </div>
+
+                <div class="tool-group">
+                    <button class="tool-btn danger" onclick="clearCanvas()">🗑️ Effacer tout</button>
+                    <button class="tool-btn success" onclick="downloadDrawing()">💾 Télécharger</button>
+                </div>
+            </div>
+
+            <div class="canvas-wrapper">
+                <canvas id="drawingCanvas" width="800" height="600"></canvas>
+            </div>
+        </div>
+    </div>
+
     <!-- Boutons Partager et QR Code -->
     <div class="share-container">
+        <button class="ami-btn" onclick="window.location.href='ami.html'" style="position: relative;">
+            <span>👥</span>
+            <span>Amis</span>
+            <span class="notification-badge" id="invitationBadge" style="display: none;">0</span>
+        </button>
         <button class="qr-btn" onclick="showQRCode()">
             <span>📱</span>
             <span>QR Code</span>
@@ -418,42 +1379,334 @@
 
     <div class="container">
         <h1>🎮 JEUX D'ADAM</h1>
-        <p class="subtitle">Choisissez votre jeu préféré</p>
-        <div class="games-container">
-            <a href="morpion.html" class="game-card">
-                <div class="game-icon">❌</div>
-                <div class="game-title">MORPION</div>
-                <div class="game-description">Alignez 3 symboles pour gagner !</div>
-                <div class="play-btn">🎮 JOUER</div>
-            </a>
-            <a href="puissance4.html" class="game-card">
-                <div class="game-icon">🔴</div>
-                <div class="game-title">PUISSANCE 4</div>
-                <div class="game-description">Alignez 4 jetons pour la victoire !</div>
-                <div class="play-btn">🎮 JOUER</div>
-            </a>
-            <a href="pendu.html" class="game-card">
-                <div class="game-icon">🎭</div>
-                <div class="game-title">LE PENDU</div>
-                <div class="game-description">Devinez le mot avant d'être pendu !</div>
-                <div class="play-btn">🎮 JOUER</div>
-            </a>
-            <a href="echecs.html" class="game-card">
-                <div class="game-icon">♟️</div>
-                <div class="game-title">ÉCHECS</div>
-                <div class="game-description">Le roi des jeux de stratégie !</div>
-                <div class="play-btn">🎮 JOUER</div>
-            </a>
-            <a href="uno.html" class="game-card">
-                <div class="game-icon">🎴</div>
-                <div class="game-title">UNO</div>
-                <div class="game-description">Débarrassez-vous de vos cartes !</div>
-                <div class="play-btn"> JOUER</div>
-            </a>
+        <p class="subtitle">Votre collection de jeux en ligne</p>
+        
+        <!-- Bouton principal JEUX -->
+        <div class="main-menu" id="mainMenu">
+            <button class="main-games-btn" onclick="showGames()">
+                <div class="btn-icon">🎮</div>
+                <div class="btn-text">JEUX</div>
+                <div class="btn-count">5 jeux disponibles</div>
+            </button>
+        </div>
+
+        <!-- Container des jeux (caché par défaut) -->
+        <div class="games-section" id="gamesSection" style="display: none;">
+            <button class="back-btn" onclick="hideGames()">
+                <span>⬅️</span>
+                <span>Retour</span>
+            </button>
+            
+            <div class="games-grid">
+                <a href="morpion.html" class="game-card">
+                    <div class="game-icon">❌</div>
+                    <div class="game-title">MORPION</div>
+                    <div class="game-description">Alignez 3 symboles pour gagner !</div>
+                    <div class="play-btn">🎮 JOUER</div>
+                </a>
+                <a href="puissance4.html" class="game-card">
+                    <div class="game-icon">🔴</div>
+                    <div class="game-title">PUISSANCE 4</div>
+                    <div class="game-description">Alignez 4 jetons pour la victoire !</div>
+                    <div class="play-btn">🎮 JOUER</div>
+                </a>
+                <a href="pendu.html" class="game-card">
+                    <div class="game-icon">🎭</div>
+                    <div class="game-title">LE PENDU</div>
+                    <div class="game-description">Devinez le mot avant d'être pendu !</div>
+                    <div class="play-btn">🎮 JOUER</div>
+                </a>
+                <a href="echecs.html" class="game-card">
+                    <div class="game-icon">♟️</div>
+                    <div class="game-title">ÉCHECS</div>
+                    <div class="game-description">Le roi des jeux de stratégie !</div>
+                    <div class="play-btn">🎮 JOUER</div>
+                </a>
+                <a href="uno.html" class="game-card">
+                    <div class="game-icon">🎴</div>
+                    <div class="game-title">UNO</div>
+                    <div class="game-description">Débarrassez-vous de vos cartes !</div>
+                    <div class="play-btn">🎮 JOUER</div>
+                </a>
+            </div>
         </div>
     </div>
 
     <script>
+        // ============================================
+        // NAVIGATION JEUX
+        // ============================================
+        
+        function showGames() {
+            const mainMenu = document.getElementById('mainMenu');
+            const gamesSection = document.getElementById('gamesSection');
+            
+            // Masquer le menu principal avec animation
+            mainMenu.style.animation = 'fadeOut 0.3s ease forwards';
+            
+            setTimeout(() => {
+                mainMenu.style.display = 'none';
+                gamesSection.style.display = 'block';
+                gamesSection.style.animation = 'slideInUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                
+                // Animer chaque carte individuellement
+                const cards = document.querySelectorAll('.game-card');
+                cards.forEach((card, index) => {
+                    card.style.animation = `cardSlideIn 0.6s ease-out ${0.1 + index * 0.1}s both`;
+                });
+            }, 300);
+
+            // Vibration si disponible
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+        }
+
+        function hideGames() {
+            const mainMenu = document.getElementById('mainMenu');
+            const gamesSection = document.getElementById('gamesSection');
+            
+            // Masquer les jeux avec animation
+            gamesSection.style.animation = 'fadeOut 0.3s ease forwards';
+            
+            setTimeout(() => {
+                gamesSection.style.display = 'none';
+                mainMenu.style.display = 'flex';
+                mainMenu.style.animation = 'fadeIn 0.5s ease both';
+            }, 300);
+
+            // Vibration si disponible
+            if ('vibrate' in navigator) {
+                navigator.vibrate(30);
+            }
+        }
+
+        // ============================================
+        // CANVAS DE DESSIN
+        // ============================================
+        
+        let canvas, ctx;
+        let isDrawing = false;
+        let currentColor = '#667eea';
+        let currentSize = 5;
+        let isEraser = false;
+        let lastX = 0;
+        let lastY = 0;
+        let isCanvasInitialized = false;
+
+        // Initialiser le canvas
+        function initCanvas() {
+            if (isCanvasInitialized) return; // Éviter la double initialisation
+            
+            canvas = document.getElementById('drawingCanvas');
+            ctx = canvas.getContext('2d');
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Événements souris
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            // Événements tactiles (mobile)
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', stopDrawing);
+
+            // Paramètres
+            document.getElementById('colorPicker').addEventListener('input', (e) => {
+                currentColor = e.target.value;
+                isEraser = false;
+            });
+
+            document.getElementById('brushSize').addEventListener('input', (e) => {
+                currentSize = e.target.value;
+                document.getElementById('sizeDisplay').textContent = currentSize + 'px';
+            });
+            
+            isCanvasInitialized = true;
+        }
+
+        // Ouvrir la modal
+        function openPaintModal() {
+            document.getElementById('paintModal').classList.add('active');
+            initCanvas(); // Toujours initialiser pour attacher les événements
+            // Vibration si disponible
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+        }
+
+        // Fermer la modal
+        function closePaintModal() {
+            document.getElementById('paintModal').classList.remove('active');
+        }
+
+        // Obtenir la position du curseur
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        }
+
+        // Obtenir la position du toucher
+        function getTouchPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const touch = e.touches[0];
+            return {
+                x: (touch.clientX - rect.left) * scaleX,
+                y: (touch.clientY - rect.top) * scaleY
+            };
+        }
+
+        // Démarrer le dessin
+        function startDrawing(e) {
+            isDrawing = true;
+            const pos = getMousePos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        // Démarrer le dessin (tactile)
+        function handleTouchStart(e) {
+            e.preventDefault();
+            isDrawing = true;
+            const pos = getTouchPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        // Dessiner
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+
+            const pos = getMousePos(e);
+
+            ctx.strokeStyle = isEraser ? 'white' : currentColor;
+            ctx.lineWidth = currentSize;
+
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        // Dessiner (tactile)
+        function handleTouchMove(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+
+            const pos = getTouchPos(e);
+
+            ctx.strokeStyle = isEraser ? 'white' : currentColor;
+            ctx.lineWidth = currentSize;
+
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        // Arrêter le dessin
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        // Mode pinceau
+        function setPenMode() {
+            isEraser = false;
+            showNotification('🖊️ Mode Pinceau activé', 'success');
+            if ('vibrate' in navigator) {
+                navigator.vibrate(30);
+            }
+        }
+
+        // Mode gomme
+        function setEraserMode() {
+            isEraser = true;
+            showNotification('🧹 Mode Gomme activé', 'success');
+            if ('vibrate' in navigator) {
+                navigator.vibrate(30);
+            }
+        }
+
+        // Effacer le canvas
+        function clearCanvas() {
+            if (confirm('Êtes-vous sûr de vouloir tout effacer ?')) {
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                showNotification('🗑️ Canvas effacé', 'success');
+                if ('vibrate' in navigator) {
+                    navigator.vibrate([50, 50, 50]);
+                }
+            }
+        }
+
+        // Télécharger le dessin
+        function downloadDrawing() {
+            const link = document.createElement('a');
+            link.download = 'mon-dessin-' + Date.now() + '.png';
+            link.href = canvas.toDataURL();
+            link.click();
+            showNotification('💾 Dessin téléchargé !', 'success');
+            if ('vibrate' in navigator) {
+                navigator.vibrate([50, 100, 50]);
+            }
+        }
+
+        // Initialiser le canvas blanc
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                canvas = document.getElementById('drawingCanvas');
+                if (canvas) {
+                    ctx = canvas.getContext('2d');
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+            }, 100);
+            
+            // Mettre à jour le badge d'invitations
+            updateInvitationBadge();
+        });
+
+        // Fonction pour mettre à jour le badge d'invitations
+        function updateInvitationBadge() {
+            const myFriendCode = localStorage.getItem('myFriendCode');
+            if (!myFriendCode) return;
+            
+            const allInvitations = localStorage.getItem('globalInvitations');
+            const globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
+            
+            // Filtrer les invitations pour moi
+            const myInvitations = globalInvitations.filter(inv => inv.toCode === myFriendCode);
+            
+            const badge = document.getElementById('invitationBadge');
+            if (badge && myInvitations.length > 0) {
+                badge.textContent = myInvitations.length;
+                badge.style.display = 'flex';
+            } else if (badge) {
+                badge.style.display = 'none';
+            }
+        }
+
+        // ============================================
+        // QR CODE ET PARTAGE (code existant)
+        // ============================================
+        
         // Fonction pour afficher le QR Code
         function showQRCode() {
             const url = window.location.href.split('?')[0]; // URL actuelle sans paramètres
@@ -604,27 +1857,43 @@
         `;
         document.head.appendChild(style);
 
-        // Fermer le modal en appuyant sur Échap
+        // Fermer les modals en appuyant sur Échap
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeQRCode();
+                closePaintModal();
             }
         });
 
-        // Empêcher le scroll du body quand la modal est ouverte
+        // Empêcher le scroll du body quand les modals sont ouvertes
         const qrModal = document.getElementById('qrModal');
-        const observer = new MutationObserver(function(mutations) {
+        const paintModal = document.getElementById('paintModal');
+        
+        const qrObserver = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'class') {
                     if (qrModal.classList.contains('active')) {
                         document.body.style.overflow = 'hidden';
-                    } else {
+                    } else if (!paintModal.classList.contains('active')) {
                         document.body.style.overflow = '';
                     }
                 }
             });
         });
-        observer.observe(qrModal, { attributes: true });
+        qrObserver.observe(qrModal, { attributes: true });
+
+        const paintObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'class') {
+                    if (paintModal.classList.contains('active')) {
+                        document.body.style.overflow = 'hidden';
+                    } else if (!qrModal.classList.contains('active')) {
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+        });
+        paintObserver.observe(paintModal, { attributes: true });
     </script>
 </body>
 

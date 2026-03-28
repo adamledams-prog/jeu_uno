@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👥 Mes Amis - JEUX D'ADAM</title>
+    <link rel="stylesheet" href="ami.css">
+</head>
+<body>
+    <!-- Particules flottantes -->
+    <div class="particles">
+        <span class="particle">👥</span>
+        <span class="particle">🎮</span>
+        <span class="particle">⭐</span>
+        <span class="particle">💙</span>
+        <span class="particle">🎯</span>
+        <span class="particle">✨</span>
+        <span class="particle">🎨</span>
+        <span class="particle">🚀</span>
+        <span class="particle">🌟</span>
+    </div>
+
+    <!-- Bouton retour -->
+    <button class="back-btn" onclick="window.location.href='index.html'">
+        <span>🏠</span>
+        <span>Accueil</span>
+    </button>
+
+    <div class="container">
+        <h1 class="title">👥 Gestion des Amis</h1>
+        <p class="subtitle">Connecte-toi avec tes amis pour jouer ensemble !</p>
+
+        <!-- Onglets principaux -->
+        <div class="main-tabs-container">
+            <button class="main-tab-btn active" onclick="switchTab('friends')" id="friendsTab">
+                <span class="tab-icon">👥</span>
+                <span class="tab-label">Amis</span>
+                <span class="tab-count" id="friendsTabCount">0</span>
+            </button>
+            <button class="main-tab-btn" onclick="switchTab('invitations')" id="invitationsTab">
+                <span class="tab-icon">📬</span>
+                <span class="tab-label">Invitations</span>
+                <span class="tab-count" id="invitationsTabCount">0</span>
+            </button>
+            <button class="main-tab-btn" onclick="switchTab('profile')" id="profileTab">
+                <span class="tab-icon">👤</span>
+                <span class="tab-label">Moi</span>
+            </button>
+        </div>
+
+        <!-- Section Mes Amis -->
+        <div class="tab-content active" id="friendsContent">
+            <div class="friends-list">
+                <div class="section-header">
+                    <h2 class="section-title">📋 Mes Amis</h2>
+                    <div class="friend-counter">
+                        <span id="friendCount">0</span>
+                        <span class="counter-label">ami(s)</span>
+                    </div>
+                </div>
+                <div class="friends-container" id="friendsContainer">
+                    <div class="no-friends" id="noFriends">
+                        <span class="emoji-big">👥</span>
+                        <p>Aucun ami pour le moment</p>
+                        <p class="small-text">Va dans l'onglet "Moi" pour ajouter des amis !</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Invitations -->
+        <div class="tab-content" id="invitationsContent">
+            <div class="invitations-list">
+                <div class="section-header">
+                    <h2 class="section-title">📬 Invitations reçues</h2>
+                    <div class="friend-counter">
+                        <span id="invitationCount">0</span>
+                        <span class="counter-label">invitation(s)</span>
+                    </div>
+                </div>
+                <div class="invitations-container" id="invitationsContainer">
+                    <div class="no-invitations" id="noInvitations">
+                        <span class="emoji-big">📭</span>
+                        <p>Aucune invitation pour le moment</p>
+                        <p class="small-text">Tes demandes d'ami apparaîtront ici !</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Mon Profil -->
+        <div class="tab-content" id="profileContent">
+            <div class="profile-section">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <span class="profile-avatar" id="profileAvatar">👤</span>
+                        <h2 class="profile-title" id="profileTitle">Mon Profil</h2>
+                    </div>
+                    
+                    <!-- Configuration Pseudo -->
+                    <div class="profile-config-section">
+                        <h3 class="config-label">✏️ Mon Pseudo</h3>
+                        <div class="pseudo-input-group">
+                            <input type="text" id="pseudoInput" class="pseudo-input" placeholder="Entre ton pseudo..." maxlength="15">
+                            <button class="save-pseudo-btn" onclick="savePseudo()">💾 Sauvegarder</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Sélection Avatar -->
+                    <div class="avatar-selection-section">
+                        <h3 class="config-label">😊 Mon Avatar</h3>
+                        <div class="avatar-options">
+                            <button class="avatar-option" onclick="selectAvatar('😎')" data-emoji="😎">😎</button>
+                            <button class="avatar-option" onclick="selectAvatar('🎮')" data-emoji="🎮">🎮</button>
+                            <button class="avatar-option" onclick="selectAvatar('🚀')" data-emoji="🚀">🚀</button>
+                            <button class="avatar-option" onclick="selectAvatar('⭐')" data-emoji="⭐">⭐</button>
+                            <button class="avatar-option" onclick="selectAvatar('🔥')" data-emoji="🔥">🔥</button>
+                        </div>
+                    </div>
+                    
+                    <div class="code-display-section">
+                        <h3 class="code-label">📱 Mon Code</h3>
+                        <div class="friend-code" id="myFriendCode">----</div>
+                        <p class="code-subtitle">Partage ce code avec tes amis</p>
+                    </div>
+                    
+                    <!-- QR Code -->
+                    <div class="qr-section">
+                        <h3 class="qr-label">📷 QR Code</h3>
+                        <div class="qr-wrapper" id="qrWrapper">
+                            <img id="qrCodeImg" src="" alt="QR Code">
+                        </div>
+                        <p class="qr-hint">Tes amis peuvent scanner ce code</p>
+                    </div>
+
+                    <!-- Bouton Ajouter -->
+                    <div class="add-section">
+                        <button class="add-friend-btn" onclick="showAddOptions()">
+                            <span class="add-icon">+</span>
+                            <span>Ajouter un ami</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajouter un ami -->
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <h2>➕ Ajouter un ami</h2>
+            <p class="modal-subtitle">Choisis une méthode</p>
+            
+            <div class="add-methods">
+                <button class="method-btn" onclick="showCodeInput()">
+                    <span class="method-icon">🔢</span>
+                    <span class="method-title">Par Code</span>
+                    <span class="method-desc">Entre le code à 4 chiffres</span>
+                </button>
+                
+                <button class="method-btn" onclick="showQRScanner()">
+                    <span class="method-icon">📸</span>
+                    <span class="method-title">Scanner QR Code</span>
+                    <span class="method-desc">Scanne le QR code de ton ami</span>
+                </button>
+            </div>
+            
+            <button class="close-modal-btn" onclick="closeAddModal()">❌ Annuler</button>
+        </div>
+    </div>
+
+    <!-- Modal Entrer le code -->
+    <div class="modal" id="codeInputModal">
+        <div class="modal-content">
+            <h2>🔢 Entrer le code</h2>
+            <p class="modal-subtitle">Entre le code à 4 chiffres de ton ami</p>
+            
+            <div class="code-input-container">
+                <input type="number" class="code-digit" maxlength="1" id="digit1" oninput="moveToNext(this, 'digit2')">
+                <input type="number" class="code-digit" maxlength="1" id="digit2" oninput="moveToNext(this, 'digit3')">
+                <input type="number" class="code-digit" maxlength="1" id="digit3" oninput="moveToNext(this, 'digit4')">
+                <input type="number" class="code-digit" maxlength="1" id="digit4" oninput="validateCode()">
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="confirm-btn" onclick="verifyCode()">✅ Confirmer</button>
+                <button class="cancel-btn" onclick="closeCodeInput()">❌ Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Scanner QR -->
+    <div class="modal" id="scannerModal">
+        <div class="modal-content">
+            <h2>📸 Scanner QR Code</h2>
+            <p class="modal-subtitle">Scanne le QR code de ton ami</p>
+            
+            <div class="scanner-container">
+                <div class="scanner-frame">
+                    <div class="scanner-line"></div>
+                    <div class="scanner-corner corner-tl"></div>
+                    <div class="scanner-corner corner-tr"></div>
+                    <div class="scanner-corner corner-bl"></div>
+                    <div class="scanner-corner corner-br"></div>
+                </div>
+                <p class="scanner-hint">🎯 Place le QR code dans le cadre</p>
+            </div>
+            
+            <!-- Simulation QR détecté -->
+            <div class="simulator-controls">
+                <button class="simulate-btn" onclick="simulateScan()">🔄 Simuler scan</button>
+            </div>
+            
+            <button class="cancel-btn" onclick="closeScannerModal()">❌ Annuler</button>
+        </div>
+    </div>
+
+    <!-- Modal Envoyer invitation -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content confirm-content">
+            <h2>📤 Envoyer une invitation</h2>
+            <p class="modal-subtitle">Envoie une demande d'ami</p>
+            
+            <div class="friend-preview">
+                <div class="preview-icon">👤</div>
+                <div class="preview-code" id="previewCode">----</div>
+            </div>
+            
+            <div class="nickname-input-container">
+                <label for="nicknameInput">💬 Ton pseudo (pour qu'il te reconnaisse) :</label>
+                <input type="text" id="nicknameInput" class="nickname-input" placeholder="Ex: TonPseudo" maxlength="15">
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="accept-btn" onclick="sendInvitation()">📤 Envoyer</button>
+                <button class="refuse-btn" onclick="cancelInvitation()">❌ Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Accepter invitation reçue -->
+    <div class="modal" id="acceptInvitationModal">
+        <div class="modal-content confirm-content">
+            <h2>📬 Demande d'ami</h2>
+            <p class="modal-subtitle">Quelqu'un veut être ton ami !</p>
+            
+            <div class="friend-preview">
+                <div class="preview-icon">👤</div>
+                <div class="preview-nickname" id="senderNickname">---</div>
+                <div class="preview-code-small">Code: <span id="senderCode">----</span></div>
+            </div>
+            
+            <div class="nickname-input-container">
+                <label for="recipientNicknameInput">💬 Donne-lui un pseudo :</label>
+                <input type="text" id="recipientNicknameInput" class="nickname-input" placeholder="Ex: JeanJoue" maxlength="15">
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="accept-btn" onclick="acceptInvitation()">✅ Accepter</button>
+                <button class="refuse-btn" onclick="refuseInvitation()">❌ Refuser</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Chat -->
+    <div class="modal" id="chatModal">
+        <div class="modal-content chat-modal-content">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <span class="chat-avatar">👤</span>
+                    <div>
+                        <div class="chat-friend-name" id="chatFriendName">Ami</div>
+                        <div class="chat-friend-code" id="chatFriendCode">Code: ----</div>
+                    </div>
+                </div>
+                <button class="close-chat-btn" onclick="closeChat()">✖️</button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-empty">
+                    <span class="chat-empty-icon">💬</span>
+                    <p>Commence la conversation !</p>
+                </div>
+            </div>
+            
+            <div class="chat-input-container">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Écris un message..." maxlength="500">
+                <button class="send-btn" onclick="sendMessage()">
+                    <span>📤</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script src="ami.js"></script>
+</body>
+</html>
