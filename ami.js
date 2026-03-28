@@ -69,7 +69,71 @@ function initializeFriendSystem() {
     // Afficher l'onglet actif (sans vibration au chargement initial)
     switchTab('friends', false);
     
+    // Vérifier si on arrive via un QR code scanné
+    checkForFriendCodeInURL();
+    
     // Note: Vibration désactivée au chargement (nécessite interaction utilisateur)
+}
+
+// ============================================
+// DÉTECTION QR CODE DANS L'URL
+// ============================================
+
+function checkForFriendCodeInURL() {
+    // Récupérer les paramètres de l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const friendCodeToAdd = urlParams.get('add');
+    
+    if (friendCodeToAdd && friendCodeToAdd.length === 4 && !isNaN(friendCodeToAdd)) {
+        // Un code ami a été détecté dans l'URL !
+        
+        // Nettoyer l'URL (enlever le paramètre)
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        // Attendre que tout soit chargé
+        setTimeout(() => {
+            // Vérifier si c'est son propre code
+            if (friendCodeToAdd === myFriendCode) {
+                showNotification('❌ Tu ne peux pas t\'ajouter toi-même !', 'error');
+                return;
+            }
+            
+            // Vérifier si l'ami existe déjà
+            const alreadyFriend = friends.find(f => f.code === friendCodeToAdd);
+            if (alreadyFriend) {
+                showNotification(`✅ ${alreadyFriend.nickname} est déjà dans tes amis !`, 'success');
+                return;
+            }
+            
+            // Vérifier si une invitation a déjà été envoyée
+            const allInvitations = localStorage.getItem('globalInvitations');
+            let globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
+            const alreadySent = globalInvitations.find(inv => 
+                inv.fromCode === myFriendCode && inv.toCode === friendCodeToAdd
+            );
+            
+            if (alreadySent) {
+                // Supprimer l'ancienne invitation
+                globalInvitations = globalInvitations.filter(inv => 
+                    !(inv.fromCode === myFriendCode && inv.toCode === friendCodeToAdd)
+                );
+                localStorage.setItem('globalInvitations', JSON.stringify(globalInvitations));
+            }
+            
+            // Afficher la modal pour envoyer l'invitation
+            pendingFriendCode = friendCodeToAdd;
+            
+            // Aller dans l'onglet profil et afficher la modal
+            switchTab('profile', false);
+            
+            showNotification(`📸 QR Code scanné ! Code détecté : ${friendCodeToAdd}`, 'success', 4000);
+            
+            setTimeout(() => {
+                showSendInvitationModal(friendCodeToAdd);
+                safeVibrate([100, 50, 100]);
+            }, 500);
+        }, 1000);
+    }
 }
 
 // ============================================
@@ -86,8 +150,11 @@ function generateFriendCode() {
 // ============================================
 
 function generateQRCode(code) {
-    // URL de l'API QR Code avec les données du code ami
-    const qrData = `FRIEND:${code}`;
+    // URL complète du site avec le code ami en paramètre
+    const currentUrl = window.location.href.split('?')[0]; // URL sans paramètres
+    const qrData = `${currentUrl}?add=${code}`;
+    
+    // Créer le QR code avec l'URL complète
     const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}`;
     document.getElementById('qrCodeImg').src = qrApiUrl;
 }
@@ -488,22 +555,31 @@ function onScanError(errorMessage) {
 }
 
 function processScannedCode(scannedData) {
-    // Le QR code devrait contenir "FRIEND:XXXX" où XXXX est le code à 4 chiffres
+    // Le QR code peut contenir :
+    // 1. Une URL complète du site avec ?add=XXXX
+    // 2. "FRIEND:XXXX" (ancien format)
+    // 3. Directement un code à 4 chiffres
+    
     let code = '';
     
-    if (scannedData.startsWith('FRIEND:')) {
+    // Vérifier si c'est une URL avec le paramètre add
+    if (scannedData.includes('?add=')) {
+        const match = scannedData.match(/[?&]add=(\d{4})/);
+        if (match) {
+            code = match[1];
+        }
+    } 
+    // Ancien format FRIEND:XXXX
+    else if (scannedData.startsWith('FRIEND:')) {
         code = scannedData.replace('FRIEND:', '');
-    } else if (scannedData.length === 4 && !isNaN(scannedData)) {
-        // Si c'est directement un code à 4 chiffres
+    } 
+    // Code direct à 4 chiffres
+    else if (scannedData.length === 4 && !isNaN(scannedData)) {
         code = scannedData;
-    } else {
-        showNotification('❌ QR Code invalide ! Ce n\'est pas un code ami.', 'error');
-        closeScannerModal();
-        return;
-    }
+    } 
     
-    if (code.length !== 4 || isNaN(code)) {
-        showNotification('❌ Code invalide !', 'error');
+    if (!code || code.length !== 4 || isNaN(code)) {
+        showNotification('❌ QR Code invalide ! Ce n\'est pas un code ami.', 'error');
         closeScannerModal();
         return;
     }

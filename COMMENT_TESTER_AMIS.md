@@ -3,24 +3,30 @@
 ## ✅ Problème résolu
 Les erreurs de vibration sont maintenant gérées - elles ne bloquent plus rien !
 
-## � Nouveau : Scan QR Code avec la caméra !
-Tu peux maintenant scanner les QR codes de tes amis avec la caméra de ton téléphone/ordinateur !
+## 📸 Nouveau : Scan QR Code RÉEL avec l'appareil photo ! 🎉
 
-### Comment scanner un QR Code :
-1. Clique sur "+ Ajouter un ami"
-2. Choisis "📸 Scanner QR Code"
-3. **Autorise l'accès à la caméra** quand ton navigateur le demande
-4. Place le QR code de ton ami devant la caméra
-5. Le code sera détecté automatiquement !
+**Le QR code fonctionne maintenant comme un vrai QR code !**
 
-### Mode Simulation :
-Si tu n'as pas accès à une caméra ou si tu veux tester sans scanner, clique sur "🔄 Mode Simulation" pour entrer manuellement un code.
+### Comment ça marche :
+1. **Affiche ton QR code** dans l'onglet "Moi"
+2. **Ton ami scanne avec son téléphone** (appareil photo natif ou app de scan)
+3. **Le site s'ouvre automatiquement** avec ton code
+4. **Une modal apparaît** pour proposer de t'ajouter en ami !
 
-### 🔄 Réinviter une personne :
-Tu peux maintenant renvoyer une invitation à une personne même si tu lui as déjà envoyé une invitation ! L'ancienne invitation sera automatiquement remplacée par la nouvelle. C'est utile si :
-- Tu veux changer le pseudo que tu as donné
-- L'autre personne a supprimé ton invitation par erreur
-- Tu veux simplement renvoyer l'invitation
+### Avantages :
+- ✅ Fonctionne avec l'**appareil photo du téléphone** (pas besoin d'ouvrir le site d'abord)
+- ✅ Scan depuis **n'importe quel appareil**
+- ✅ **URL complète** dans le QR code (ex: `ami.html?add=1234`)
+- ✅ Détection automatique du code ami
+- ✅ Plus besoin de saisir manuellement !
+
+### Scanner depuis l'app (optionnel) :
+Tu peux aussi :
+1. Ouvrir le site sur ton téléphone
+2. Cliquer sur "+ Ajouter un ami"  
+3. Choisir "📸 Scanner QR Code"
+4. **Autorise l'accès à la caméra**
+5. Scanner le QR code d'un ami
 
 ## 📱 Comment ajouter un ami (Test localStorage)
 
@@ -80,7 +86,12 @@ Les invitations ne sont **PAS synchronisées** entre :
 - ❌ **Ne fonctionne PAS** : Deux navigateurs différents (Chrome/Firefox)
 - ❌ **Ne fonctionne PAS** : Deux appareils différents (PC/téléphone)
 
-**Pour tester le système :**
+**MAIS maintenant avec le QR Code :**
+- ✅ **Fonctionne** : Scanner le QR code depuis **n'importe quel appareil** !
+- ✅ Le QR code contient l'URL complète du site + ton code
+- ✅ Quand quelqu'un scanne, le site s'ouvre et propose d'ajouter en ami
+
+**Pour tester le système (même navigateur) :**
 1. Ouvre `ami.html` dans un onglet normal
 2. Note ton code (ex: 1234)
 3. Ouvre un AUTRE onglet normal dans le même navigateur
@@ -90,13 +101,27 @@ Les invitations ne sont **PAS synchronisées** entre :
 7. **Rafraîchis l'onglet 2** et va dans "Invitations"
 8. L'invitation devrait apparaître ! ✅
 
+**Pour tester avec QR Code (différents appareils) :**
+1. Ouvre `ami.html` sur ton PC et va dans "Moi"
+2. Affiche ton QR code
+3. Scanne avec ton téléphone (appareil photo natif)
+4. Le site s'ouvre sur le téléphone
+5. Une modal propose d'ajouter en ami ! 🎉
+
 **Astuce :** Donne des pseudos différents dans chaque onglet pour éviter la confusion !
+
+### 🔄 Réinviter une personne :
+Tu peux maintenant renvoyer une invitation à une personne même si tu lui as déjà envoyé une invitation ! L'ancienne invitation sera automatiquement remplacée par la nouvelle. C'est utile si :
+- Tu veux changer le pseudo que tu as donné
+- L'autre personne a supprimé ton invitation par erreur
+- Tu veux simplement renvoyer l'invitation
 
 ## 🎯 Fonctionnalités
 
 - ✅ Code ami unique à 4 chiffres
-- ✅ QR Code pour partager
+- ✅ **QR Code avec URL complète** 🚀 (scanne = ouvre le site + propose d'ajouter)
 - ✅ **Scanner QR Code avec la caméra réelle** 📸
+- ✅ **Fonctionne entre différents appareils** grâce au QR code
 - ✅ **Réinviter une personne** (remplace l'ancienne invitation) 🔄
 - ✅ Système d'invitations bidirectionnel
 - ✅ Chat en temps réel (localStorage)
