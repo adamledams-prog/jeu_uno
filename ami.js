@@ -9,6 +9,17 @@ let pendingFriendCode = '';
 let currentTab = 'friends';
 let pendingInvitationIndex = -1;
 
+// Fonction utilitaire pour vibration sécurisée
+function safeVibrate(pattern) {
+    try {
+        if ('vibrate' in navigator) {
+            navigator.vibrate(pattern);
+        }
+    } catch (e) {
+        // Ignorer les erreurs de vibration
+    }
+}
+
 // Initialisation au chargement de la page
 window.addEventListener('load', () => {
     initializeFriendSystem();
@@ -45,9 +56,7 @@ function initializeFriendSystem() {
     switchTab('friends');
     
     // Vibration de bienvenue
-    if ('vibrate' in navigator) {
-        navigator.vibrate([100, 50, 100]);
-    }
+    safeVibrate([100, 50, 100]);
 }
 
 // ============================================
@@ -97,9 +106,7 @@ function switchTab(tab) {
         document.getElementById('profileContent').classList.add('active');
     }
     
-    if ('vibrate' in navigator) {
-        navigator.vibrate(30);
-    }
+    safeVibrate(30);
 }
 
 // ============================================
@@ -175,18 +182,14 @@ function deleteFriend(index) {
         displayFriends();
         showNotification('❌ Ami supprimé', 'error');
         
-        if ('vibrate' in navigator) {
-            navigator.vibrate([50, 50, 50]);
-        }
+        safeVibrate([50, 50, 50]);
     }
 }
 
 function playWithFriend(nickname) {
     showNotification(`🎮 Invitation envoyée à ${nickname} !`, 'success');
     
-    if ('vibrate' in navigator) {
-        navigator.vibrate([100, 50, 100]);
-    }
+    safeVibrate([100, 50, 100]);
     
     // Rediriger vers la page d'accueil pour choisir un jeu
     setTimeout(() => {
@@ -292,9 +295,7 @@ function createInvitationCard(invitation, index) {
 function showAddOptions() {
     document.getElementById('addModal').classList.add('active');
     
-    if ('vibrate' in navigator) {
-        navigator.vibrate(50);
-    }
+    safeVibrate(50);
 }
 
 function closeAddModal() {
@@ -310,9 +311,7 @@ function showCodeInput() {
         document.getElementById('digit1').focus();
     }, 100);
     
-    if ('vibrate' in navigator) {
-        navigator.vibrate(50);
-    }
+    safeVibrate(50);
 }
 
 function closeCodeInput() {
@@ -344,9 +343,7 @@ function validateCode() {
     
     if (digit1 && digit2 && digit3 && digit4) {
         // Code complet
-        if ('vibrate' in navigator) {
-            navigator.vibrate(50);
-        }
+        safeVibrate(50);
     }
 }
 
@@ -358,9 +355,7 @@ function verifyCode() {
     
     if (!digit1 || !digit2 || !digit3 || !digit4) {
         showNotification('❌ Entre les 4 chiffres !', 'error');
-        if ('vibrate' in navigator) {
-            navigator.vibrate([100, 50, 100]);
-        }
+        safeVibrate([100, 50, 100]);
         return;
     }
     
@@ -369,9 +364,7 @@ function verifyCode() {
     // Vérifier si c'est son propre code
     if (code === myFriendCode) {
         showNotification('❌ Tu ne peux pas t\'ajouter toi-même !', 'error');
-        if ('vibrate' in navigator) {
-            navigator.vibrate([100, 50, 100, 50, 100]);
-        }
+        safeVibrate([100, 50, 100, 50, 100]);
         return;
     }
     
@@ -379,9 +372,7 @@ function verifyCode() {
     const alreadyFriend = friends.find(f => f.code === code);
     if (alreadyFriend) {
         showNotification(`❌ ${alreadyFriend.nickname} est déjà dans tes amis !`, 'error');
-        if ('vibrate' in navigator) {
-            navigator.vibrate([100, 50, 100]);
-        }
+        safeVibrate([100, 50, 100]);
         return;
     }
     
@@ -394,9 +385,7 @@ function verifyCode() {
     
     if (alreadySent) {
         showNotification('📤 Invitation déjà envoyée à ce code !', 'error');
-        if ('vibrate' in navigator) {
-            navigator.vibrate([100, 50, 100]);
-        }
+        safeVibrate([100, 50, 100]);
         return;
     }
     
@@ -410,9 +399,7 @@ function showQRScanner() {
     closeAddModal();
     document.getElementById('scannerModal').classList.add('active');
     
-    if ('vibrate' in navigator) {
-        navigator.vibrate([50, 50]);
-    }
+    safeVibrate([50, 50]);
 }
 
 function closeScannerModal() {
@@ -421,9 +408,7 @@ function closeScannerModal() {
 
 function simulateScan() {
     // Simulation d'un scan de QR code
-    if ('vibrate' in navigator) {
-        navigator.vibrate([50, 100, 50]);
-    }
+    safeVibrate([50, 100, 50]);
     
     showNotification('📸 QR Code détecté !', 'success');
     
@@ -487,9 +472,7 @@ function showSendInvitationModal(code) {
         document.getElementById('nicknameInput').focus();
     }, 300);
     
-    if ('vibrate' in navigator) {
-        navigator.vibrate(50);
-    }
+    safeVibrate(50);
 }
 
 function sendInvitation() {
@@ -497,9 +480,7 @@ function sendInvitation() {
     
     if (!nickname) {
         showNotification('❌ Entre ton pseudo !', 'error');
-        if ('vibrate' in navigator) {
-            navigator.vibrate([100, 50, 100]);
-        }
+        safeVibrate([100, 50, 100]);
         return;
     }
     
@@ -517,12 +498,10 @@ function sendInvitation() {
     // Fermer la modal
     document.getElementById('confirmModal').classList.remove('active');
     
-    // Notification de succès
-    showNotification('📤 Invitation envoyée !', 'success');
+    // Notification de succès avec explications
+    showNotification(`📤 Invitation envoyée au code ${pendingFriendCode} ! L'autre personne doit ouvrir son onglet Invitations pour accepter.`, 'success');
     
-    if ('vibrate' in navigator) {
-        navigator.vibrate([100, 50, 100, 50, 100]);
-    }
+    safeVibrate([100, 50, 100, 50, 100]);
     
     // Réinitialiser
     pendingFriendCode = '';
@@ -532,9 +511,7 @@ function cancelInvitation() {
     document.getElementById('confirmModal').classList.remove('active');
     pendingFriendCode = '';
     
-    if ('vibrate' in navigator) {
-        navigator.vibrate([50, 50]);
-    }
+    safeVibrate([50, 50]);
 }
 
 // ============================================
@@ -555,9 +532,7 @@ function showAcceptModal(index) {
         document.getElementById('recipientNicknameInput').focus();
     }, 300);
     
-    if ('vibrate' in navigator) {
-        navigator.vibrate(50);
-    }
+    safeVibrate(50);
 }
 
 function acceptInvitation() {
@@ -567,9 +542,7 @@ function acceptInvitation() {
     
     if (!nickname) {
         showNotification('❌ Entre un pseudo pour ton ami !', 'error');
-        if ('vibrate' in navigator) {
-            navigator.vibrate([100, 50, 100]);
-        }
+        safeVibrate([100, 50, 100]);
         return;
     }
     
@@ -611,9 +584,7 @@ function acceptInvitation() {
     // Notification de succès
     showNotification(`✅ ${nickname} est maintenant ton ami !`, 'success');
     
-    if ('vibrate' in navigator) {
-        navigator.vibrate([100, 50, 100, 50, 100]);
-    }
+    safeVibrate([100, 50, 100, 50, 100]);
     
     pendingInvitationIndex = -1;
 }
@@ -631,9 +602,7 @@ function refuseInvitation() {
     
     showNotification('❌ Invitation refusée', 'error');
     
-    if ('vibrate' in navigator) {
-        navigator.vibrate([50, 50]);
-    }
+    safeVibrate([50, 50]);
     
     pendingInvitationIndex = -1;
 }
@@ -645,9 +614,7 @@ function refuseInvitationDirect(index) {
         removeInvitation(invitation);
         showNotification('❌ Invitation refusée', 'error');
         
-        if ('vibrate' in navigator) {
-            navigator.vibrate([50, 50]);
-        }
+        safeVibrate([50, 50]);
     }
 }
 
@@ -751,9 +718,7 @@ function openChat(friendCode, friendNickname) {
         document.getElementById('chatInput').focus();
     }, 300);
     
-    if ('vibrate' in navigator) {
-        navigator.vibrate(50);
-    }
+    safeVibrate(50);
 }
 
 function closeChat() {
@@ -855,9 +820,7 @@ function sendMessage() {
     input.value = '';
     
     // Vibration
-    if ('vibrate' in navigator) {
-        navigator.vibrate(30);
-    }
+    safeVibrate(30);
     
     // Scroller vers le bas
     const container = document.getElementById('chatMessages');
@@ -878,9 +841,7 @@ setInterval(() => {
     // Si nouvelles invitations, notification
     if (invitations.length > currentInvitationCount) {
         showNotification('📬 Nouvelle invitation reçue !', 'success');
-        if ('vibrate' in navigator) {
-            navigator.vibrate([100, 50, 100]);
-        }
+        safeVibrate([100, 50, 100]);
     }
 }, 3000);
 // ============================================
@@ -943,9 +904,7 @@ function savePseudo() {
     showNotification('✅ Pseudo enregistré avec succès !', 'success');
     
     // Vibration
-    if ('vibrate' in navigator) {
-        navigator.vibrate([50, 30, 50]);
-    }
+    safeVibrate([50, 30, 50]);
     
     // Animation sur le titre
     const titleElement = document.getElementById('profileTitle');
@@ -974,9 +933,7 @@ function selectAvatar(emoji) {
     showNotification('✅ Avatar sélectionné !', 'success');
     
     // Vibration
-    if ('vibrate' in navigator) {
-        navigator.vibrate(50);
-    }
+    safeVibrate(50);
     
     // Animation sur l'avatar
     const avatarElement = document.getElementById('profileAvatar');

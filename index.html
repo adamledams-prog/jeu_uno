@@ -697,6 +697,25 @@
             margin-top: 20px;
         }
 
+        .ami-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            animation: slideInLeft 0.5s ease;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
         .share-container {
             position: fixed;
             top: 20px;
@@ -1116,6 +1135,11 @@
                 gap: 8px;
             }
 
+            .ami-container {
+                top: 15px;
+                left: 15px;
+            }
+
             .share-btn, .qr-btn, .ami-btn {
                 padding: 12px 18px;
                 font-size: 0.9rem;
@@ -1252,6 +1276,11 @@
                 gap: 6px;
             }
 
+            .ami-container {
+                top: 10px;
+                left: 10px;
+            }
+
             .share-btn, .qr-btn, .ami-btn {
                 padding: 10px 14px;
                 font-size: 0.85rem;
@@ -1347,13 +1376,17 @@
         </div>
     </div>
 
-    <!-- Boutons Partager et QR Code -->
-    <div class="share-container">
+    <!-- Bouton Amis -->
+    <div class="ami-container">
         <button class="ami-btn" onclick="window.location.href='ami.html'" style="position: relative;">
             <span>👥</span>
             <span>Amis</span>
             <span class="notification-badge" id="invitationBadge" style="display: none;">0</span>
         </button>
+    </div>
+
+    <!-- Boutons Partager et QR Code -->
+    <div class="share-container">
         <button class="qr-btn" onclick="showQRCode()">
             <span>📱</span>
             <span>QR Code</span>
