@@ -181,6 +181,9 @@ function switchTab(tab, shouldVibrate = true) {
     } else if (tab === 'invitations') {
         document.getElementById('invitationsTab').classList.add('active');
         document.getElementById('invitationsContent').classList.add('active');
+        // Forcer le rechargement des invitations quand on ouvre l'onglet
+        console.log('📬 Ouverture onglet invitations - rechargement...');
+        loadInvitations();
     } else if (tab === 'profile') {
         document.getElementById('profileTab').classList.add('active');
         document.getElementById('profileContent').classList.add('active');
@@ -812,9 +815,12 @@ function acceptInvitation() {
     const senderFriendsData = localStorage.getItem(senderFriendsKey);
     const senderFriends = senderFriendsData ? JSON.parse(senderFriendsData) : [];
     
+    // Récupérer mon propre pseudo (celui configuré dans mon profil)
+    const myNickname = localStorage.getItem(`userPseudo_${myFriendCode}`) || 'Utilisateur';
+    
     senderFriends.push({
         code: myFriendCode,
-        nickname: invitation.fromNickname, // Le pseudo qu'il avait donné
+        nickname: myNickname, // Mon propre pseudo (pas celui de l'expéditeur !)
         addedAt: new Date().toISOString()
     });
     
@@ -1084,11 +1090,16 @@ function sendMessage() {
 
 // Refresh toutes les 3 secondes
 setInterval(() => {
+    console.log('🔄 Auto-refresh des invitations...');
+    
     const currentInvitationCount = invitations.length;
     loadInvitations();
     
+    console.log(`📊 Avant: ${currentInvitationCount}, Après: ${invitations.length}`);
+    
     // Si nouvelles invitations, notification
     if (invitations.length > currentInvitationCount) {
+        console.log('🎉 NOUVELLE INVITATION DÉTECTÉE !');
         showNotification('📬 Nouvelle invitation reçue !', 'success');
         safeVibrate([100, 50, 100]);
     }
