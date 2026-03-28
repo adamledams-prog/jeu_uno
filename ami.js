@@ -662,8 +662,8 @@ function sendInvitation() {
     // Fermer la modal
     document.getElementById('confirmModal').classList.remove('active');
     
-    // Notification de succès avec explications
-    showNotification(`📤 Invitation envoyée au code ${pendingFriendCode} ! L'autre personne doit ouvrir son onglet Invitations pour accepter.`, 'success');
+    // Notification de succès avec explications (6 secondes pour avoir le temps de lire)
+    showNotification(`📤 Invitation envoyée ! ${pendingFriendCode} doit RAFRAÎCHIR sa page et aller dans "Invitations". ⚠️ Ne fonctionne que sur le même navigateur !`, 'success', 6000);
     
     safeVibrate([100, 50, 100, 50, 100]);
     
@@ -786,14 +786,14 @@ function refuseInvitationDirect(index) {
 // NOTIFICATIONS
 // ============================================
 
-function showNotification(message, type = 'success') {
+function showNotification(message, type = 'success', duration = 3000) {
     const notification = document.getElementById('notification');
     notification.textContent = message;
     notification.className = 'notification show ' + type;
     
     setTimeout(() => {
         notification.classList.remove('show');
-    }, 3000);
+    }, duration);
 }
 
 // ============================================

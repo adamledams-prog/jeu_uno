@@ -26,16 +26,18 @@ Tu peux maintenant renvoyer une invitation à une personne même si tu lui as d�
 
 Le système d'amis fonctionne avec **localStorage** qui est partagé sur le même domaine. Pour tester :
 
-### Méthode 1: Deux onglets (Recommandé) 🔄
+### Méthode 1: Deux onglets sur le MÊME navigateur ✅
+
+**IMPORTANT : Les deux onglets doivent être dans le même navigateur (pas d'incognito) !**
 
 1. **Onglet 1 - Toi**
    - Ouvre `ami.html`
    - Note ton code (ex: 1234)
    - Va dans l'onglet "Moi" et donne-toi un pseudo + avatar
 
-2. **Onglet 2 - Ton ami**
-   - Ouvre un NOUVEL onglet en navigation privée/incognito 🕵️
-   - Va sur `ami.html`
+2. **Onglet 2 - Ton ami (dans le MÊME navigateur)**
+   - Ouvre un NOUVEL onglet **NORMAL** (pas incognito !)
+   - Va sur `ami.html` dans ce nouvel onglet
    - Note le code (ex: 5678)
    - Va dans l'onglet "Moi" et donne-toi un autre pseudo
 
@@ -47,26 +49,48 @@ Le système d'amis fonctionne avec **localStorage** qui est partagé sur le mêm
    - Donne ton pseudo et valide
 
 4. **Accepter l'invitation (onglet 2)**
+   - **Rafraîchis la page** ou attends 3 secondes
    - Va dans l'onglet "Invitations"
-   - Tu verras l'invitation apparaître (auto-refresh toutes les 3s)
+   - Tu verras l'invitation apparaître !
    - Clique sur "✅ Accepter"
    - Donne un pseudo pour ton ami
    - Validé ! 🎉
 
-### Méthode 2: Deux appareils/navigateurs différents 📱💻
+### Méthode 2: Deux appareils différents 📱💻
 
-1. Ouvre `ami.html` sur deux appareils différents
-2. Échange vos codes à 4 chiffres
-3. Ou **scanne le QR code** de l'autre appareil directement !
-4. Suivre les mêmes étapes que la Méthode 1
+**⚠️ ATTENTION : Cette méthode NE FONCTIONNE PAS avec localStorage !**
+
+Le système actuel utilise `localStorage` qui est **local à chaque navigateur**. 
+Les invitations ne sont **PAS synchronisées** entre :
+- ❌ Deux appareils différents (téléphone + ordinateur)
+- ❌ Deux navigateurs différents (Chrome + Firefox)
+- ❌ Navigation normale + Navigation privée
+
+**Pour que ça fonctionne entre deux appareils, il faudrait :**
+- Un serveur backend (Node.js, PHP, etc.)
+- Ou une base de données en ligne (Firebase, Supabase, etc.)
+
+**En attendant, utilise la Méthode 1 (deux onglets normaux du même navigateur) ! ✅**
 
 ### ⚠️ Important
 
-- **localStorage n'est PAS partagé** entre navigation normale et navigation privée
-- **localStorage n'est PAS partagé** entre différents navigateurs
-- Les invitations s'affichent automatiquement (refresh toutes les 3 secondes)
-- Si tu ne vois pas d'invitations, c'est normal si personne ne t'a envoyé d'invitation
-- **Autorise l'accès à la caméra** pour scanner les QR codes
+**localStorage est LOCAL au navigateur :**
+- ✅ **Fonctionne** : Deux onglets normaux du **même navigateur**
+- ❌ **Ne fonctionne PAS** : Navigation normale + Navigation privée/incognito
+- ❌ **Ne fonctionne PAS** : Deux navigateurs différents (Chrome/Firefox)
+- ❌ **Ne fonctionne PAS** : Deux appareils différents (PC/téléphone)
+
+**Pour tester le système :**
+1. Ouvre `ami.html` dans un onglet normal
+2. Note ton code (ex: 1234)
+3. Ouvre un AUTRE onglet normal dans le même navigateur
+4. Va sur `ami.html` dans ce deuxième onglet
+5. Note le nouveau code (ex: 5678)
+6. Envoie une invitation depuis l'onglet 1 vers le code 5678
+7. **Rafraîchis l'onglet 2** et va dans "Invitations"
+8. L'invitation devrait apparaître ! ✅
+
+**Astuce :** Donne des pseudos différents dans chaque onglet pour éviter la confusion !
 
 ## 🎯 Fonctionnalités
 
