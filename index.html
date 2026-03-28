@@ -123,28 +123,65 @@
             top: 20px;
             right: 20px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             z-index: 1000;
+            animation: slideInRight 0.5s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .share-btn, .qr-btn {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 12px 20px;
-            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            padding: 14px 24px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: bold;
+            font-size: 1rem;
+            font-weight: 600;
             color: #667eea;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .share-btn::before, .qr-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+            transition: left 0.5s;
+        }
+
+        .share-btn:hover::before, .qr-btn:hover::before {
+            left: 100%;
         }
 
         .share-btn:hover, .qr-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            background: white;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+            background: linear-gradient(135deg, #ffffff, rgba(255, 255, 255, 0.95));
+            border-color: #667eea;
+        }
+
+        .share-btn:active, .qr-btn:active {
+            transform: translateY(-2px) scale(1.02);
         }
 
         .qr-modal {
@@ -154,11 +191,28 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
             z-index: 2000;
             justify-content: center;
             align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         .qr-modal.active {
@@ -166,41 +220,79 @@
         }
 
         .qr-content {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            padding: 40px 30px;
+            border-radius: 30px;
             text-align: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
             max-width: 90%;
+            animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid rgba(255, 255, 255, 0.8);
         }
 
         .qr-content h2 {
-            color: #667eea;
-            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .qr-subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        .qr-code-wrapper {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            display: inline-block;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
         }
 
         .qr-content img {
-            max-width: 250px;
+            width: 100%;
+            max-width: 220px;
+            border-radius: 15px;
+            display: block;
+        }
+
+        .qr-url {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 15px;
+            word-break: break-all;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.05);
             border-radius: 10px;
-            margin: 20px 0;
         }
 
         .close-qr {
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 10px 30px;
-            border-radius: 10px;
+            padding: 14px 40px;
+            border-radius: 15px;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            margin-top: 15px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-top: 20px;
             transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
 
         .close-qr:hover {
-            background: #764ba2;
-            transform: scale(1.05);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .close-qr:active {
+            transform: translateY(-1px) scale(1.02);
         }
 
         @media (max-width: 768px) {
@@ -214,14 +306,85 @@
             }
 
             .share-container {
-                top: 10px;
-                right: 10px;
-                flex-direction: column;
+                top: 15px;
+                right: 15px;
+                gap: 8px;
             }
 
             .share-btn, .qr-btn {
-                padding: 10px 15px;
+                padding: 12px 18px;
                 font-size: 0.9rem;
+                border-radius: 15px;
+            }
+
+            .qr-content {
+                padding: 30px 20px;
+                max-width: 95%;
+                margin: 10px;
+            }
+
+            .qr-content h2 {
+                font-size: 1.5rem;
+            }
+
+            .qr-code-wrapper {
+                padding: 15px;
+            }
+
+            .qr-content img {
+                max-width: 200px;
+            }
+
+            .close-qr {
+                padding: 12px 35px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .share-container {
+                top: 10px;
+                right: 10px;
+                gap: 6px;
+            }
+
+            .share-btn, .qr-btn {
+                padding: 10px 14px;
+                font-size: 0.85rem;
+                gap: 6px;
+            }
+
+            .qr-content {
+                padding: 25px 15px;
+            }
+
+            .qr-content h2 {
+                font-size: 1.3rem;
+            }
+
+            .qr-subtitle {
+                font-size: 0.85rem;
+            }
+
+            .qr-code-wrapper {
+                padding: 12px;
+            }
+
+            .qr-content img {
+                max-width: 180px;
+            }
+
+            .qr-url {
+                font-size: 0.75rem;
+            }
+
+            .close-qr {
+                padding: 10px 30px;
+                font-size: 0.95rem;
             }
         }
     </style>
@@ -230,17 +393,26 @@
 <body>
     <!-- Boutons Partager et QR Code -->
     <div class="share-container">
-        <button class="qr-btn" onclick="showQRCode()">📱 QR Code</button>
-        <button class="share-btn" onclick="shareWebsite()">🔗 Partager</button>
+        <button class="qr-btn" onclick="showQRCode()">
+            <span>📱</span>
+            <span>QR Code</span>
+        </button>
+        <button class="share-btn" onclick="shareWebsite()">
+            <span>🔗</span>
+            <span>Partager</span>
+        </button>
     </div>
 
     <!-- Modal QR Code -->
     <div class="qr-modal" id="qrModal" onclick="closeQRCode()">
         <div class="qr-content" onclick="event.stopPropagation()">
             <h2>📱 Scannez pour jouer !</h2>
-            <img id="qrCodeImg" src="" alt="QR Code">
-            <p style="color: #666; font-size: 0.9rem;">Scannez ce QR code avec votre téléphone</p>
-            <button class="close-qr" onclick="closeQRCode()">Fermer</button>
+            <p class="qr-subtitle">Partagez avec vos amis en un scan</p>
+            <div class="qr-code-wrapper">
+                <img id="qrCodeImg" src="" alt="QR Code">
+            </div>
+            <div class="qr-url" id="qrUrl"></div>
+            <button class="close-qr" onclick="closeQRCode()">✨ Fermer</button>
         </div>
     </div>
 
@@ -287,11 +459,20 @@
             const url = window.location.href.split('?')[0]; // URL actuelle sans paramètres
             const qrModal = document.getElementById('qrModal');
             const qrCodeImg = document.getElementById('qrCodeImg');
+            const qrUrl = document.getElementById('qrUrl');
             
-            // Générer le QR code via API
-            qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
+            // Générer le QR code via API avec un design amélioré
+            qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=667eea&margin=10`;
+            
+            // Afficher l'URL
+            qrUrl.textContent = url;
             
             qrModal.classList.add('active');
+            
+            // Ajouter un petit effet de vibration sur mobile
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
         }
 
         // Fonction pour fermer le QR Code
@@ -303,8 +484,8 @@
         // Fonction pour partager le site
         async function shareWebsite() {
             const shareData = {
-                title: '🎮 Jeux d\'Adam',
-                text: 'Découvrez cette collection de jeux incroyables ! Morpion, Puissance 4, Pendu, Échecs et UNO !',
+                title: '🎮 Jeux d\'Adam - Collection de jeux',
+                text: 'Découvrez cette collection de jeux incroyables ! Morpion, Puissance 4, Pendu, Échecs et UNO ! 🎯',
                 url: window.location.href
             };
 
@@ -312,7 +493,11 @@
             if (navigator.share) {
                 try {
                     await navigator.share(shareData);
-                    console.log('Partage réussi !');
+                    // Vibration de succès
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate([50, 100, 50]);
+                    }
+                    showNotification('🎉 Merci d\'avoir partagé !', 'success');
                 } catch (err) {
                     if (err.name !== 'AbortError') {
                         console.log('Erreur lors du partage:', err);
@@ -329,21 +514,95 @@
         function fallbackShare() {
             const url = window.location.href;
             
-            // Créer un élément temporaire pour copier
+            // Utiliser l'API Clipboard moderne si disponible
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(() => {
+                    showNotification('🔗 Lien copié dans le presse-papier !', 'success');
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate(50);
+                    }
+                }, () => {
+                    fallbackCopy(url);
+                });
+            } else {
+                fallbackCopy(url);
+            }
+        }
+
+        // Méthode de copie legacy
+        function fallbackCopy(url) {
             const tempInput = document.createElement('input');
             tempInput.value = url;
+            tempInput.style.position = 'fixed';
+            tempInput.style.opacity = '0';
             document.body.appendChild(tempInput);
             tempInput.select();
+            tempInput.setSelectionRange(0, 99999);
             
             try {
                 document.execCommand('copy');
-                alert('🔗 Lien copié dans le presse-papier !');
+                showNotification('🔗 Lien copié !', 'success');
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(50);
+                }
             } catch (err) {
-                alert('❌ Impossible de copier le lien');
+                showNotification('❌ Impossible de copier', 'error');
             }
             
             document.body.removeChild(tempInput);
         }
+
+        // Fonction pour afficher des notifications toast
+        function showNotification(message, type = 'success') {
+            // Supprimer l'ancienne notification si elle existe
+            const oldNotif = document.querySelector('.toast-notification');
+            if (oldNotif) {
+                oldNotif.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.className = 'toast-notification';
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: ${type === 'success' ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'linear-gradient(135deg, #e74c3c, #c0392b)'};
+                color: white;
+                padding: 16px 24px;
+                border-radius: 15px;
+                font-weight: 600;
+                font-size: 0.95rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                z-index: 10000;
+                animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                backdrop-filter: blur(10px);
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Supprimer après 3 secondes
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease forwards';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Animation pour les notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideOutRight {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
 
         // Fermer le modal en appuyant sur Échap
         document.addEventListener('keydown', function(e) {
@@ -351,6 +610,21 @@
                 closeQRCode();
             }
         });
+
+        // Empêcher le scroll du body quand la modal est ouverte
+        const qrModal = document.getElementById('qrModal');
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'class') {
+                    if (qrModal.classList.contains('active')) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+        });
+        observer.observe(qrModal, { attributes: true });
     </script>
 </body>
 

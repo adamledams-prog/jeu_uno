@@ -132,10 +132,12 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 20px;
+    padding-top: 40px;
     z-index: 1000;
     animation: modalFadeIn 0.3s ease;
+    overflow-y: auto;
 }
 
 @keyframes modalFadeIn {
@@ -405,10 +407,12 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 20px;
+    padding-top: 40px;
     z-index: 1000;
     animation: modalFadeIn 0.3s ease;
+    overflow-y: auto;
 }
 
 .avatar-selection-solo h2 {
