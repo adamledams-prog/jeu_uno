@@ -294,6 +294,11 @@ function loadInvitations() {
     // Filtrer les invitations destinées à mon code
     invitations = globalInvitations.filter(inv => inv.toCode === myFriendCode);
     
+    // Debug : afficher les invitations
+    console.log('📬 Mon code:', myFriendCode);
+    console.log('📋 Toutes les invitations:', globalInvitations);
+    console.log('✅ Mes invitations:', invitations);
+    
     // Afficher les invitations
     displayInvitations();
 }
@@ -305,6 +310,10 @@ function saveInvitation(invitation) {
     
     globalInvitations.push(invitation);
     localStorage.setItem('globalInvitations', JSON.stringify(globalInvitations));
+    
+    // Debug : afficher toutes les invitations
+    console.log('📤 Invitation sauvegardée:', invitation);
+    console.log('📋 Toutes les invitations:', globalInvitations);
 }
 
 function removeInvitation(invitationToRemove) {
@@ -739,7 +748,7 @@ function sendInvitation() {
     document.getElementById('confirmModal').classList.remove('active');
     
     // Notification de succès avec explications (6 secondes pour avoir le temps de lire)
-    showNotification(`📤 Invitation envoyée ! ${pendingFriendCode} doit RAFRAÎCHIR sa page et aller dans "Invitations". ⚠️ Ne fonctionne que sur le même navigateur !`, 'success', 6000);
+    showNotification(`📤 Invitation envoyée ! Si vous êtes sur le MÊME NAVIGATEUR, l'autre personne la verra dans 3 secondes max. Sinon voir la console (F12) pour debug.`, 'success', 6000);
     
     safeVibrate([100, 50, 100, 50, 100]);
     

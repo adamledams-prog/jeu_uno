@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test Système Amis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #667eea, #764ba2);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 5px;
+            transition: transform 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-3px);
+        }
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid;
+        }
+        .log-success { border-color: #4ade80; }
+        .log-error { border-color: #f87171; }
+        .log-info { border-color: #60a5fa; }
+        .log-warning { border-color: #fbbf24; }
+        input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin: 5px;
+            font-size: 1rem;
+        }
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 5px;
+        }
+        .status-ok { background: #4ade80; color: black; }
+        .status-error { background: #f87171; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Système d'Amis</h1>
+
+        <div class="test-section">
+            <h2>📋 État du localStorage</h2>
+            <button onclick="checkLocalStorage()">🔍 Vérifier localStorage</button>
+            <button onclick="clearAllData()">🗑️ Effacer tout</button>
+            <div id="storageStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>👤 Simuler Utilisateur 1</h2>
+            <input type="text" id="user1Code" placeholder="Code (auto)" readonly>
+            <input type="text" id="user1Pseudo" placeholder="Pseudo User1" value="Alice">
+            <br>
+            <button onclick="createUser1()">✨ Créer User1</button>
+            <button onclick="user1SendInvite()">📤 Envoyer invitation à User2</button>
+            <button onclick="checkUser1Invites()">📬 Voir mes invitations</button>
+        </div>
+
+        <div class="test-section">
+            <h2>👤 Simuler Utilisateur 2</h2>
+            <input type="text" id="user2Code" placeholder="Code (auto)" readonly>
+            <input type="text" id="user2Pseudo" placeholder="Pseudo User2" value="Bob">
+            <br>
+            <button onclick="createUser2()">✨ Créer User2</button>
+            <button onclick="user2SendInvite()">📤 Envoyer invitation à User1</button>
+            <button onclick="checkUser2Invites()">📬 Voir mes invitations</button>
+        </div>
+
+        <div class="test-section">
+            <h2>🔄 Tests automatiques</h2>
+            <button onclick="runFullTest()">🚀 Test complet</button>
+            <button onclick="testQRCodeURL()">📸 Test URL QR Code</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Console de Log</h2>
+            <button onclick="clearLog()">🧹 Effacer log</button>
+            <div class="log" id="logConsole"></div>
+        </div>
+    </div>
+
+    <script>
+        let user1Code = '';
+        let user2Code = '';
+
+        function log(message, type = 'info') {
+            const logConsole = document.getElementById('logConsole');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.innerHTML = `[${timestamp}] ${message}`;
+            logConsole.appendChild(entry);
+            logConsole.scrollTop = logConsole.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('logConsole').innerHTML = '';
+        }
+
+        function generateCode() {
+            return String(Math.floor(1000 + Math.random() * 9000));
+        }
+
+        function checkLocalStorage() {
+            log('🔍 Vérification du localStorage...', 'info');
+            const statusDiv = document.getElementById('storageStatus');
+            
+            const myCode = localStorage.getItem('myFriendCode');
+            const invitations = localStorage.getItem('globalInvitations');
+            const friends = localStorage.getItem(`friends_${myCode}`);
+            
+            let html = '<div style="margin-top: 15px;">';
+            
+            if (myCode) {
+                html += `<div class="status status-ok">✅ Mon code: ${myCode}</div>`;
+                log(`✅ Mon code: ${myCode}`, 'success');
+            } else {
+                html += '<div class="status status-error">❌ Pas de code</div>';
+                log('❌ Pas de code généré', 'error');
+            }
+            
+            const invitList = invitations ? JSON.parse(invitations) : [];
+            html += `<div class="status status-ok">📬 ${invitList.length} invitation(s)</div>`;
+            log(`📬 ${invitList.length} invitation(s) dans le système`, 'info');
+            
+            if (invitList.length > 0) {
+                invitList.forEach((inv, i) => {
+                    log(`  └─ [${i+1}] De ${inv.fromCode} (${inv.fromNickname}) vers ${inv.toCode}`, 'info');
+                });
+            }
+            
+            html += '</div>';
+            statusDiv.innerHTML = html;
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ Effacer toutes les données ?')) {
+                localStorage.clear();
+                log('🗑️ Toutes les données effacées', 'warning');
+                user1Code = '';
+                user2Code = '';
+                document.getElementById('user1Code').value = '';
+                document.getElementById('user2Code').value = '';
+                checkLocalStorage();
+            }
+        }
+
+        function createUser1() {
+            user1Code = generateCode();
+            document.getElementById('user1Code').value = user1Code;
+            log(`✨ User1 créé avec le code: ${user1Code}`, 'success');
+        }
+
+        function createUser2() {
+            user2Code = generateCode();
+            document.getElementById('user2Code').value = user2Code;
+            log(`✨ User2 créé avec le code: ${user2Code}`, 'success');
+        }
+
+        function user1SendInvite() {
+            if (!user1Code || !user2Code) {
+                log('❌ Crée d\'abord les 2 utilisateurs !', 'error');
+                return;
+            }
+            
+            const pseudo = document.getElementById('user1Pseudo').value;
+            const invitation = {
+                fromCode: user1Code,
+                fromNickname: pseudo,
+                toCode: user2Code,
+                timestamp: Date.now()
+            };
+            
+            const allInvitations = localStorage.getItem('globalInvitations');
+            const globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
+            globalInvitations.push(invitation);
+            localStorage.setItem('globalInvitations', JSON.stringify(globalInvitations));
+            
+            log(`📤 User1 (${user1Code}) envoie invitation à User2 (${user2Code}) sous le pseudo "${pseudo}"`, 'success');
+            checkLocalStorage();
+        }
+
+        function user2SendInvite() {
+            if (!user1Code || !user2Code) {
+                log('❌ Crée d\'abord les 2 utilisateurs !', 'error');
+                return;
+            }
+            
+            const pseudo = document.getElementById('user2Pseudo').value;
+            const invitation = {
+                fromCode: user2Code,
+                fromNickname: pseudo,
+                toCode: user1Code,
+                timestamp: Date.now()
+            };
+            
+            const allInvitations = localStorage.getItem('globalInvitations');
+            const globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
+            globalInvitations.push(invitation);
+            localStorage.setItem('globalInvitations', JSON.stringify(globalInvitations));
+            
+            log(`📤 User2 (${user2Code}) envoie invitation à User1 (${user1Code}) sous le pseudo "${pseudo}"`, 'success');
+            checkLocalStorage();
+        }
+
+        function checkUser1Invites() {
+            if (!user1Code) {
+                log('❌ Crée d\'abord User1 !', 'error');
+                return;
+            }
+            
+            const allInvitations = localStorage.getItem('globalInvitations');
+            const globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
+            const myInvites = globalInvitations.filter(inv => inv.toCode === user1Code);
+            
+            log(`📬 User1 (${user1Code}) a ${myInvites.length} invitation(s)`, 'info');
+            myInvites.forEach((inv, i) => {
+                log(`  └─ [${i+1}] De ${inv.fromNickname} (code: ${inv.fromCode})`, 'success');
+            });
+        }
+
+        function checkUser2Invites() {
+            if (!user2Code) {
+                log('❌ Crée d\'abord User2 !', 'error');
+                return;
+            }
+            
+            const allInvitations = localStorage.getItem('globalInvitations');
+            const globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
+            const myInvites = globalInvitations.filter(inv => inv.toCode === user2Code);
+            
+            log(`📬 User2 (${user2Code}) a ${myInvites.length} invitation(s)`, 'info');
+            myInvites.forEach((inv, i) => {
+                log(`  └─ [${i+1}] De ${inv.fromNickname} (code: ${inv.fromCode})`, 'success');
+            });
+        }
+
+        function runFullTest() {
+            log('🚀 Début du test complet...', 'info');
+            clearAllData();
+            
+            setTimeout(() => {
+                log('📝 Étape 1: Création des utilisateurs', 'info');
+                createUser1();
+                createUser2();
+            }, 500);
+            
+            setTimeout(() => {
+                log('📝 Étape 2: User1 envoie invitation', 'info');
+                user1SendInvite();
+            }, 1500);
+            
+            setTimeout(() => {
+                log('📝 Étape 3: Vérification des invitations de User2', 'info');
+                checkUser2Invites();
+            }, 2500);
+            
+            setTimeout(() => {
+                log('📝 Étape 4: User2 envoie invitation', 'info');
+                user2SendInvite();
+            }, 3500);
+            
+            setTimeout(() => {
+                log('📝 Étape 5: Vérification des invitations de User1', 'info');
+                checkUser1Invites();
+            }, 4500);
+            
+            setTimeout(() => {
+                log('✅ Test complet terminé !', 'success');
+                checkLocalStorage();
+            }, 5500);
+        }
+
+        function testQRCodeURL() {
+            if (!user1Code) {
+                createUser1();
+            }
+            
+            const currentUrl = window.location.href.split('?')[0].replace('test-ami-system.html', 'ami.html');
+            const qrUrl = `${currentUrl}?add=${user1Code}`;
+            
+            log(`📸 URL du QR Code générée:`, 'success');
+            log(`   ${qrUrl}`, 'info');
+            log(`💡 Copie cette URL et ouvre-la dans un nouvel onglet pour tester !`, 'warning');
+            
+            // Copier dans le presse-papier
+            navigator.clipboard.writeText(qrUrl).then(() => {
+                log(`📋 URL copiée dans le presse-papier !`, 'success');
+            });
+        }
+
+        // Auto-check au chargement
+        window.onload = () => {
+            log('🎉 Test du système d\'amis chargé !', 'success');
+            checkLocalStorage();
+        };
+    </script>
+</body>
+</html>
