@@ -196,19 +196,14 @@
             <p class="modal-subtitle">Scanne le QR code de ton ami</p>
             
             <div class="scanner-container">
-                <div class="scanner-frame">
-                    <div class="scanner-line"></div>
-                    <div class="scanner-corner corner-tl"></div>
-                    <div class="scanner-corner corner-tr"></div>
-                    <div class="scanner-corner corner-bl"></div>
-                    <div class="scanner-corner corner-br"></div>
-                </div>
-                <p class="scanner-hint">🎯 Place le QR code dans le cadre</p>
+                <!-- Zone de la caméra -->
+                <div id="qr-reader" style="width: 100%; max-width: 500px; margin: 0 auto;"></div>
+                <p class="scanner-hint" id="scannerHint">🎯 Place le QR code devant la caméra</p>
             </div>
             
-            <!-- Simulation QR détecté -->
-            <div class="simulator-controls">
-                <button class="simulate-btn" onclick="simulateScan()">🔄 Simuler scan</button>
+            <!-- Bouton simuler (optionnel pour tests) -->
+            <div class="simulator-controls" style="margin-top: 15px;">
+                <button class="simulate-btn" onclick="simulateScan()">🔄 Mode Simulation</button>
             </div>
             
             <button class="cancel-btn" onclick="closeScannerModal()">❌ Annuler</button>
@@ -295,6 +290,8 @@
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
+    <!-- Bibliothèque de scan QR Code -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="ami.js"></script>
 </body>
 </html>

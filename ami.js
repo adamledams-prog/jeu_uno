@@ -34,6 +34,11 @@ window.addEventListener('load', () => {
     initializeFriendSystem();
 });
 
+// Arrêter la caméra lors de la fermeture de la page
+window.addEventListener('beforeunload', () => {
+    stopQRScanner();
+});
+
 // ============================================
 // INITIALISATION
 // ============================================
@@ -389,15 +394,19 @@ function verifyCode() {
     
     // Vérifier si une invitation a déjà été envoyée
     const allInvitations = localStorage.getItem('globalInvitations');
-    const globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
+    let globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
     const alreadySent = globalInvitations.find(inv => 
         inv.fromCode === myFriendCode && inv.toCode === code
     );
     
     if (alreadySent) {
-        showNotification('📤 Invitation déjà envoyée à ce code !', 'error');
-        safeVibrate([100, 50, 100]);
-        return;
+        // Supprimer l'ancienne invitation pour permettre de réinviter
+        globalInvitations = globalInvitations.filter(inv => 
+            !(inv.fromCode === myFriendCode && inv.toCode === code)
+        );
+        localStorage.setItem('globalInvitations', JSON.stringify(globalInvitations));
+        showNotification('🔄 Ancienne invitation remplacée !', 'success');
+        safeVibrate([50, 50]);
     }
     
     // Code valide - afficher la modal d'envoi d'invitation
@@ -406,29 +415,169 @@ function verifyCode() {
     showSendInvitationModal(code);
 }
 
+// Variable globale pour le scanner QR
+let html5QrcodeScanner = null;
+let isScanning = false;
+
 function showQRScanner() {
     closeAddModal();
     document.getElementById('scannerModal').classList.add('active');
     
     safeVibrate([50, 50]);
+    
+    // Démarrer le scan après un court délai pour laisser la modal s'afficher
+    setTimeout(() => {
+        startQRScanner();
+    }, 300);
+}
+
+function startQRScanner() {
+    if (isScanning) return;
+    
+    // Vérifier si la bibliothèque est chargée
+    if (typeof Html5Qrcode === 'undefined') {
+        showNotification('❌ Erreur : bibliothèque de scan non chargée', 'error');
+        return;
+    }
+    
+    isScanning = true;
+    
+    // Créer le scanner
+    html5QrcodeScanner = new Html5Qrcode("qr-reader");
+    
+    // Configuration du scanner
+    const config = {
+        fps: 10,    // Images par seconde
+        qrbox: { width: 250, height: 250 }  // Taille de la zone de scan
+    };
+    
+    // Démarrer le scanner avec la caméra arrière (environnement) si disponible
+    html5QrcodeScanner.start(
+        { facingMode: "environment" }, // Caméra arrière
+        config,
+        onScanSuccess,
+        onScanError
+    ).catch(err => {
+        // Si la caméra arrière n'est pas disponible, essayer la caméra frontale
+        html5QrcodeScanner.start(
+            { facingMode: "user" }, // Caméra frontale
+            config,
+            onScanSuccess,
+            onScanError
+        ).catch(err2 => {
+            showNotification('❌ Impossible d\'accéder à la caméra', 'error');
+            isScanning = false;
+        });
+    });
+}
+
+function onScanSuccess(decodedText, decodedResult) {
+    // QR Code détecté avec succès
+    safeVibrate([50, 100, 50]);
+    
+    // Arrêter le scanner
+    stopQRScanner();
+    
+    // Traiter le résultat
+    processScannedCode(decodedText);
+}
+
+function onScanError(errorMessage) {
+    // Erreur de scan (normal, ça arrive tant qu'aucun QR n'est détecté)
+    // On n'affiche rien pour ne pas polluer la console
+}
+
+function processScannedCode(scannedData) {
+    // Le QR code devrait contenir "FRIEND:XXXX" où XXXX est le code à 4 chiffres
+    let code = '';
+    
+    if (scannedData.startsWith('FRIEND:')) {
+        code = scannedData.replace('FRIEND:', '');
+    } else if (scannedData.length === 4 && !isNaN(scannedData)) {
+        // Si c'est directement un code à 4 chiffres
+        code = scannedData;
+    } else {
+        showNotification('❌ QR Code invalide ! Ce n\'est pas un code ami.', 'error');
+        closeScannerModal();
+        return;
+    }
+    
+    if (code.length !== 4 || isNaN(code)) {
+        showNotification('❌ Code invalide !', 'error');
+        closeScannerModal();
+        return;
+    }
+    
+    // Vérifications comme pour le code manuel
+    if (code === myFriendCode) {
+        showNotification('❌ Tu ne peux pas t\'ajouter toi-même !', 'error');
+        closeScannerModal();
+        return;
+    }
+    
+    const alreadyFriend = friends.find(f => f.code === code);
+    if (alreadyFriend) {
+        showNotification(`❌ ${alreadyFriend.nickname} est déjà dans tes amis !`, 'error');
+        closeScannerModal();
+        return;
+    }
+    
+    const allInvitations = localStorage.getItem('globalInvitations');
+    let globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
+    const alreadySent = globalInvitations.find(inv => 
+        inv.fromCode === myFriendCode && inv.toCode === code
+    );
+    
+    if (alreadySent) {
+        // Supprimer l'ancienne invitation pour permettre de réinviter
+        globalInvitations = globalInvitations.filter(inv => 
+            !(inv.fromCode === myFriendCode && inv.toCode === code)
+        );
+        localStorage.setItem('globalInvitations', JSON.stringify(globalInvitations));
+        showNotification('🔄 Ancienne invitation remplacée !', 'success');
+        safeVibrate([50, 50]);
+    } else {
+        showNotification('📸 QR Code scanné avec succès !', 'success');
+    }
+    pendingFriendCode = code;
+    closeScannerModal();
+    
+    setTimeout(() => {
+        showSendInvitationModal(code);
+    }, 500);
+}
+
+function stopQRScanner() {
+    if (html5QrcodeScanner && isScanning) {
+        html5QrcodeScanner.stop().then(() => {
+            html5QrcodeScanner.clear();
+            html5QrcodeScanner = null;
+            isScanning = false;
+        }).catch(err => {
+            console.error('Erreur lors de l\'arrêt du scanner:', err);
+            isScanning = false;
+        });
+    }
 }
 
 function closeScannerModal() {
+    // Arrêter le scanner si actif
+    stopQRScanner();
+    
     document.getElementById('scannerModal').classList.remove('active');
 }
 
 function simulateScan() {
+    // Arrêter le scanner si actif
+    stopQRScanner();
+    
     // Simulation d'un scan de QR code
     safeVibrate([50, 100, 50]);
     
-    showNotification('📸 QR Code détecté !', 'success');
+    showNotification('🔄 Mode simulation activé', 'success');
     
     setTimeout(() => {
-        // Pour la simulation, on peut soit :
-        // 1. Générer un code aléatoire
-        // 2. Demander à l'utilisateur d'entrer un code
-        
-        // Ici on demande à l'utilisateur
+        // Pour la simulation, on demande à l'utilisateur d'entrer un code
         const scannedCode = prompt('📸 Code scanné (simulation) :\n\nEntre le code à 4 chiffres de ton ami :');
         
         if (!scannedCode || scannedCode.length !== 4 || isNaN(scannedCode)) {
@@ -452,21 +601,25 @@ function simulateScan() {
         }
         
         const allInvitations = localStorage.getItem('globalInvitations');
-        const globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
+        let globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
         const alreadySent = globalInvitations.find(inv => 
             inv.fromCode === myFriendCode && inv.toCode === scannedCode
         );
         
         if (alreadySent) {
-            showNotification('📤 Invitation déjà envoyée !', 'error');
-            closeScannerModal();
-            return;
+            // Supprimer l'ancienne invitation pour permettre de réinviter
+            globalInvitations = globalInvitations.filter(inv => 
+                !(inv.fromCode === myFriendCode && inv.toCode === scannedCode)
+            );
+            localStorage.setItem('globalInvitations', JSON.stringify(globalInvitations));
+            showNotification('🔄 Ancienne invitation remplacée !', 'success');
+            safeVibrate([50, 50]);
         }
         
         pendingFriendCode = scannedCode;
         closeScannerModal();
         showSendInvitationModal(scannedCode);
-    }, 1000);
+    }, 500);
 }
 
 // ============================================
