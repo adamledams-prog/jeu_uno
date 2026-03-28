@@ -118,6 +118,91 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
+        .share-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .share-btn, .qr-btn {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #667eea;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .share-btn:hover, .qr-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: white;
+        }
+
+        .qr-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .qr-modal.active {
+            display: flex;
+        }
+
+        .qr-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
+        }
+
+        .qr-content h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .qr-content img {
+            max-width: 250px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .close-qr {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .close-qr:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5rem;
@@ -127,11 +212,38 @@
                 width: 100%;
                 max-width: 350px;
             }
+
+            .share-container {
+                top: 10px;
+                right: 10px;
+                flex-direction: column;
+            }
+
+            .share-btn, .qr-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 
 <body>
+    <!-- Boutons Partager et QR Code -->
+    <div class="share-container">
+        <button class="qr-btn" onclick="showQRCode()">📱 QR Code</button>
+        <button class="share-btn" onclick="shareWebsite()">🔗 Partager</button>
+    </div>
+
+    <!-- Modal QR Code -->
+    <div class="qr-modal" id="qrModal" onclick="closeQRCode()">
+        <div class="qr-content" onclick="event.stopPropagation()">
+            <h2>📱 Scannez pour jouer !</h2>
+            <img id="qrCodeImg" src="" alt="QR Code">
+            <p style="color: #666; font-size: 0.9rem;">Scannez ce QR code avec votre téléphone</p>
+            <button class="close-qr" onclick="closeQRCode()">Fermer</button>
+        </div>
+    </div>
+
     <div class="container">
         <h1>🎮 JEUX D'ADAM</h1>
         <p class="subtitle">Choisissez votre jeu préféré</p>
@@ -168,6 +280,78 @@
             </a>
         </div>
     </div>
+
+    <script>
+        // Fonction pour afficher le QR Code
+        function showQRCode() {
+            const url = window.location.href.split('?')[0]; // URL actuelle sans paramètres
+            const qrModal = document.getElementById('qrModal');
+            const qrCodeImg = document.getElementById('qrCodeImg');
+            
+            // Générer le QR code via API
+            qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
+            
+            qrModal.classList.add('active');
+        }
+
+        // Fonction pour fermer le QR Code
+        function closeQRCode() {
+            const qrModal = document.getElementById('qrModal');
+            qrModal.classList.remove('active');
+        }
+
+        // Fonction pour partager le site
+        async function shareWebsite() {
+            const shareData = {
+                title: '🎮 Jeux d\'Adam',
+                text: 'Découvrez cette collection de jeux incroyables ! Morpion, Puissance 4, Pendu, Échecs et UNO !',
+                url: window.location.href
+            };
+
+            // Vérifier si l'API Web Share est disponible
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                    console.log('Partage réussi !');
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        console.log('Erreur lors du partage:', err);
+                        fallbackShare();
+                    }
+                }
+            } else {
+                // Fallback : copier le lien
+                fallbackShare();
+            }
+        }
+
+        // Fonction de secours pour copier le lien
+        function fallbackShare() {
+            const url = window.location.href;
+            
+            // Créer un élément temporaire pour copier
+            const tempInput = document.createElement('input');
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand('copy');
+                alert('🔗 Lien copié dans le presse-papier !');
+            } catch (err) {
+                alert('❌ Impossible de copier le lien');
+            }
+            
+            document.body.removeChild(tempInput);
+        }
+
+        // Fermer le modal en appuyant sur Échap
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeQRCode();
+            }
+        });
+    </script>
 </body>
 
 </html>
