@@ -199,27 +199,71 @@ document.getElementById('startComputerGame').addEventListener('click', () => {
     document.getElementById('coinFlip').style.display = 'flex';
 });
 
-// Boutons de difficulté
+// Variable pour suivre qui commence la prochaine partie
+let nextStarter = 1; // 1 = joueur, 2 = IA
+
+// Boutons de difficulté - Démarrer directement le jeu
 document.getElementById('easyMode').addEventListener('click', () => {
     difficulty = 'easy';
-    difficultySelection.style.display = 'none';
-    avatarSelectionSolo.style.display = 'block';
-    chatbot.showMessage('avatarSelection');
+    startQuickComputerGame();
 });
 
 document.getElementById('mediumMode').addEventListener('click', () => {
     difficulty = 'medium';
-    difficultySelection.style.display = 'none';
-    avatarSelectionSolo.style.display = 'block';
-    chatbot.showMessage('avatarSelection');
+    startQuickComputerGame();
 });
 
 document.getElementById('hardMode').addEventListener('click', () => {
     difficulty = 'hard';
-    difficultySelection.style.display = 'none';
-    avatarSelectionSolo.style.display = 'block';
-    chatbot.showMessage('avatarSelection');
+    startQuickComputerGame();
 });
+
+// Fonction pour démarrer rapidement le jeu contre l'ordinateur
+function startQuickComputerGame() {
+    // Le joueur est toujours les croix rouges
+    player1Avatar = '👤';
+    player1Pseudo = 'Vous';
+    selectedTeam = 'red'; // Joueur = croix rouges
+    gameMode = 'computer';
+    
+    // Réinitialiser les scores
+    scores.player1 = 0;
+    scores.player2 = 0;
+    
+    // Configuration de l'ordinateur selon la difficulté
+    if (difficulty === 'easy') {
+        player2Pseudo = "🤖 Robot Débutant";
+        player2Avatar = "🤖";
+        chatbot.showMessage('gameStartEasy');
+    } else if (difficulty === 'medium') {
+        player2Pseudo = "🦾 Robot Avancé";
+        player2Avatar = "🦾";
+        chatbot.showMessage('gameStartMedium');
+    } else {
+        player2Pseudo = "🤯 Robot Expert";
+        player2Avatar = "🤯";
+        chatbot.showMessage('gameStartHard');
+    }
+    
+    // Masquer la sélection de difficulté et afficher le jeu
+    difficultySelection.style.display = 'none';
+    gameArea.style.display = 'block';
+    
+    // Mettre à jour l'interface avec les symboles
+    document.getElementById('player1Avatar').innerHTML = '<span style="color: #e74c3c;">❌</span>';
+    document.getElementById('player2Avatar').innerHTML = '<span style="color: #3498db;">⭕</span>';
+    document.getElementById('player1Score').textContent = scores.player1;
+    document.getElementById('player2Score').textContent = scores.player2;
+    
+    // Réinitialiser le jeu
+    resetBoard();
+    gameActive = true;
+    
+    // Le joueur commence toujours la première partie
+    currentPlayer = 1;
+    nextStarter = 1; // Première partie = joueur
+    updateCurrentPlayer();
+}
 
 document.getElementById('backFromDifficulty').addEventListener('click', () => {
     difficultySelection.style.display = 'none';
@@ -779,8 +823,7 @@ function resetBoard() {
         cell.textContent = '';
         cell.classList.remove('taken', 'winner', 'winner-player1', 'winner-player2');
     });
-    currentPlayer = 1;
-    updateCurrentPlayer();
+    // Ne pas réinitialiser currentPlayer ici, laissez l'appelant le gérer
     gameActive = true;
 }
 
@@ -788,6 +831,23 @@ function resetBoard() {
 playAgainBtn.addEventListener('click', () => {
     winnerMessage.style.display = 'none';
     resetBoard();
+    
+    // Alterner qui commence : si le joueur a commencé, l'IA commence
+    if (nextStarter === 1) {
+        nextStarter = 2; // Prochaine fois l'IA commence
+        currentPlayer = 1;
+        gameActive = true;
+        updateCurrentPlayer();
+    } else {
+        nextStarter = 1; // Prochaine fois le joueur commence
+        currentPlayer = 2;
+        gameActive = true;
+        updateCurrentPlayer();
+        // L'IA joue en premier
+        setTimeout(() => {
+            makeAIMove();
+        }, 1000);
+    }
 });
 
 // Bouton nouvelle partie
@@ -799,6 +859,11 @@ resetGameBtn.addEventListener('click', () => {
     
     // Réinitialiser le plateau
     resetBoard();
+    
+    // Le joueur recommence toujours
+    currentPlayer = 1;
+    nextStarter = 1;
+    updateCurrentPlayer();
 });
 
 // Bouton changer les avatars
