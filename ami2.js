@@ -16,6 +16,9 @@ let invitationSubscription = null;
 // ============================================
 
 window.addEventListener('load', () => {
+    // Afficher le bon message selon le mode
+    updateSystemStatusDisplay();
+    
     // Charger les invitations
     loadInvitations();
     
@@ -27,6 +30,25 @@ window.addEventListener('load', () => {
         stopQRScanner();
     });
 });
+
+// ============================================
+// AFFICHAGE DU STATUT SYSTÈME
+// ============================================
+
+function updateSystemStatusDisplay() {
+    const supabaseStatus = document.getElementById('supabaseStatus');
+    const localStorageWarning = document.getElementById('localStorageWarning');
+    
+    if (window.isSupabaseConfigured && window.supabaseClient) {
+        // Mode Supabase : afficher message vert
+        if (supabaseStatus) supabaseStatus.style.display = 'block';
+        if (localStorageWarning) localStorageWarning.style.display = 'none';
+    } else {
+        // Mode localStorage : afficher avertissement orange
+        if (supabaseStatus) supabaseStatus.style.display = 'none';
+        if (localStorageWarning) localStorageWarning.style.display = 'block';
+    }
+}
 
 // ============================================
 // DÉTECTION QR CODE DANS L'URL

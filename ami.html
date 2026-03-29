@@ -81,7 +81,7 @@
                 </div>
                 
                 <!-- Avertissement Supabase -->
-                <div style="background: rgba(76, 175, 80, 0.2); border: 2px solid #4caf50; border-radius: 15px; padding: 15px; margin-bottom: 20px;">
+                <div id="supabaseStatus" style="background: rgba(76, 175, 80, 0.2); border: 2px solid #4caf50; border-radius: 15px; padding: 15px; margin-bottom: 20px; display: none;">
                     <p style="color: #fff; font-weight: bold; margin-bottom: 8px;">✅ SYSTÈME EN LIGNE !</p>
                     <p style="color: #fff; font-size: 0.9rem; margin-bottom: 5px;">• Fonctionne maintenant entre <strong>TOUS les appareils</strong> !</p>
                     <p style="color: #fff; font-size: 0.85rem; margin-left: 20px;">✓ PC, téléphone, tablette</p>
@@ -89,6 +89,15 @@
                     <p style="color: #fff; font-size: 0.85rem; margin-left: 20px;">✓ Navigation privée/incognito OK</p>
                     <p style="color: #fff; font-size: 0.85rem; margin-left: 20px;">✓ Invitations en <strong>temps réel</strong> ⚡</p>
                     <p style="color: #fff; font-size: 0.8rem; margin-top: 8px; opacity: 0.9;">Propulsé par Supabase 🚀</p>
+                </div>
+                
+                <!-- Avertissement localStorage -->
+                <div id="localStorageWarning" style="background: rgba(255, 152, 0, 0.2); border: 2px solid #ff9800; border-radius: 15px; padding: 15px; margin-bottom: 20px; display: none;">
+                    <p style="color: #fff; font-weight: bold; margin-bottom: 8px;">⚠️ MODE LOCAL</p>
+                    <p style="color: #fff; font-size: 0.9rem; margin-bottom: 5px;">• Les invitations fonctionnent <strong>uniquement sur cet appareil</strong></p>
+                    <p style="color: #fff; font-size: 0.85rem; margin-left: 20px;">❌ Pas de synchronisation entre appareils</p>
+                    <p style="color: #fff; font-size: 0.85rem; margin-left: 20px;">ℹ️ Pour activer le multi-appareils, configure Supabase</p>
+                    <p style="color: #fff; font-size: 0.8rem; margin-top: 8px; opacity: 0.9;">📖 Voir <a href="GUIDE_SUPABASE.md" style="color: #4fc3f7; text-decoration: underline;">GUIDE_SUPABASE.md</a></p>
                 </div>
                 
                 <div class="invitations-container" id="invitationsContainer">
