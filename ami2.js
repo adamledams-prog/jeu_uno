@@ -1,7 +1,7 @@
 // ============================================
-// SYSTÈME DE GESTION DES INVITATIONS
+// SYSTÈME DE GESTION DES INVITATIONS AVEC SUPABASE
 // Ce fichier gère : invitations, scan QR, envoi/réception
-// Nécessite ami.js pour fonctionner
+// Nécessite ami.js + supabase-config.js pour fonctionner
 // ============================================
 
 let invitations = [];
@@ -9,6 +9,7 @@ let pendingFriendCode = '';
 let pendingInvitationIndex = -1;
 let html5QrcodeScanner = null;
 let isScanning = false;
+let invitationSubscription = null;
 
 // ============================================
 // INITIALISATION DES INVITATIONS
@@ -31,7 +32,7 @@ window.addEventListener('load', () => {
 // DÉTECTION QR CODE DANS L'URL
 // ============================================
 
-function checkForFriendCodeInURL() {
+async function checkForFriendCodeInURL() {
     const urlParams = new URLSearchParams(window.location.search);
     const friendCodeToAdd = urlParams.get('add');
     
@@ -39,7 +40,7 @@ function checkForFriendCodeInURL() {
         // Nettoyer l'URL
         window.history.replaceState({}, document.title, window.location.pathname);
         
-        setTimeout(() => {
+        setTimeout(async () => {
             // Vérifier si c'est son propre code
             if (friendCodeToAdd === myFriendCode) {
                 showNotification('❌ Tu ne peux pas t\'ajouter toi-même !', 'error');
@@ -53,18 +54,24 @@ function checkForFriendCodeInURL() {
                 return;
             }
             
-            // Vérifier si une invitation a déjà été envoyée
-            const allInvitations = localStorage.getItem('globalInvitations');
-            let globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
-            const alreadySent = globalInvitations.find(inv => 
-                inv.fromCode === myFriendCode && inv.toCode === friendCodeToAdd
-            );
-            
-            if (alreadySent) {
-                globalInvitations = globalInvitations.filter(inv => 
-                    !(inv.fromCode === myFriendCode && inv.toCode === friendCodeToAdd)
-                );
-                localStorage.setItem('globalInvitations', JSON.stringify(globalInvitations));
+            // Vérifier si une invitation a déjà été envoyée dans Supabase
+            try {
+                const { data } = await supabase
+                    .from('invitations')
+                    .select('*')
+                    .eq('from_code', myFriendCode)
+                    .eq('to_code', friendCodeToAdd);
+                
+                if (data && data.length > 0) {
+                    // Supprimer l'ancienne invitation
+                    await supabase
+                        .from('invitations')
+                        .delete()
+                        .eq('from_code', myFriendCode)
+                        .eq('to_code', friendCodeToAdd);
+                }
+            } catch (err) {
+                console.error('Erreur:', err);
             }
             
             pendingFriendCode = friendCodeToAdd;
@@ -82,46 +89,83 @@ function checkForFriendCodeInURL() {
 }
 
 // ============================================
-// GESTION DES INVITATIONS
+// GESTION DES INVITATIONS AVEC SUPABASE
 // ============================================
 
-function loadInvitations() {
-    const allInvitations = localStorage.getItem('globalInvitations');
-    const globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
-    
-    // Filtrer les invitations destinées à mon code
-    invitations = globalInvitations.filter(inv => inv.toCode === myFriendCode);
-    
-    console.log('📬 Mon code:', myFriendCode);
-    console.log('📋 Toutes les invitations:', globalInvitations);
-    console.log('✅ Mes invitations:', invitations);
-    
-    displayInvitations();
+async function loadInvitations() {
+    try {
+        // Récupérer les invitations depuis Supabase
+        const { data, error } = await supabase
+            .from('invitations')
+            .select('*')
+            .eq('to_code', myFriendCode);
+        
+        if (error) {
+            console.error('❌ Erreur Supabase:', error);
+            return;
+        }
+        
+        // Convertir au format interne
+        invitations = data.map(inv => ({
+            fromCode: inv.from_code,
+            fromNickname: inv.from_nickname,
+            toCode: inv.to_code,
+            timestamp: inv.timestamp,
+            id: inv.id
+        }));
+        
+        console.log('📬 Mon code:', myFriendCode);
+        console.log('✅ Mes invitations:', invitations);
+        
+        displayInvitations();
+    } catch (err) {
+        console.error('❌ Erreur:', err);
+    }
 }
 
-function saveInvitation(invitation) {
-    const allInvitations = localStorage.getItem('globalInvitations');
-    const globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
-    
-    globalInvitations.push(invitation);
-    localStorage.setItem('globalInvitations', JSON.stringify(globalInvitations));
-    
-    console.log('📤 Invitation sauvegardée:', invitation);
-    console.log('📋 Toutes les invitations:', globalInvitations);
+async function saveInvitation(invitation) {
+    try {
+        // Sauvegarder dans Supabase
+        const { data, error } = await supabase
+            .from('invitations')
+            .insert([{
+                from_code: invitation.fromCode,
+                from_nickname: invitation.fromNickname,
+                to_code: invitation.toCode,
+                timestamp: invitation.timestamp
+            }])
+            .select();
+        
+        if (error) {
+            console.error('❌ Erreur Supabase:', error);
+            showNotification('❌ Erreur lors de l\'envoi de l\'invitation', 'error');
+            return;
+        }
+        
+        console.log('📤 Invitation sauvegardée:', data);
+    } catch (err) {
+        console.error('❌ Erreur:', err);
+    }
 }
 
-function removeInvitation(invitationToRemove) {
-    const allInvitations = localStorage.getItem('globalInvitations');
-    let globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
-    
-    globalInvitations = globalInvitations.filter(inv => 
-        !(inv.fromCode === invitationToRemove.fromCode && 
-          inv.toCode === invitationToRemove.toCode && 
-          inv.timestamp === invitationToRemove.timestamp)
-    );
-    
-    localStorage.setItem('globalInvitations', JSON.stringify(globalInvitations));
-    loadInvitations();
+async function removeInvitation(invitationToRemove) {
+    try {
+        // Supprimer de Supabase
+        const { error } = await supabase
+            .from('invitations')
+            .delete()
+            .eq('id', invitationToRemove.id);
+        
+        if (error) {
+            console.error('❌ Erreur Supabase:', error);
+            return;
+        }
+        
+        console.log('🗑️ Invitation supprimée');
+        loadInvitations();
+    } catch (err) {
+        console.error('❌ Erreur:', err);
+    }
 }
 
 function displayInvitations() {
@@ -224,7 +268,7 @@ function validateCode() {
     }
 }
 
-function verifyCode() {
+async function verifyCode() {
     const digit1 = document.getElementById('digit1').value;
     const digit2 = document.getElementById('digit2').value;
     const digit3 = document.getElementById('digit3').value;
@@ -251,19 +295,27 @@ function verifyCode() {
         return;
     }
     
-    const allInvitations = localStorage.getItem('globalInvitations');
-    let globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
-    const alreadySent = globalInvitations.find(inv => 
-        inv.fromCode === myFriendCode && inv.toCode === code
-    );
-    
-    if (alreadySent) {
-        globalInvitations = globalInvitations.filter(inv => 
-            !(inv.fromCode === myFriendCode && inv.toCode === code)
-        );
-        localStorage.setItem('globalInvitations', JSON.stringify(globalInvitations));
-        showNotification('🔄 Ancienne invitation remplacée !', 'success');
-        safeVibrate([50, 50]);
+    // Vérifier si une invitation a déjà été envoyée dans Supabase
+    try {
+        const { data } = await supabase
+            .from('invitations')
+            .select('*')
+            .eq('from_code', myFriendCode)
+            .eq('to_code', code);
+        
+        if (data && data.length > 0) {
+            // Supprimer l'ancienne invitation
+            await supabase
+                .from('invitations')
+                .delete()
+                .eq('from_code', myFriendCode)
+                .eq('to_code', code);
+            
+            showNotification('🔄 Ancienne invitation remplacée !', 'success');
+            safeVibrate([50, 50]);
+        }
+    } catch (err) {
+        console.error('Erreur:', err);
     }
     
     pendingFriendCode = code;
@@ -331,7 +383,7 @@ function onScanError(errorMessage) {
     // Normal, pas de QR détecté
 }
 
-function processScannedCode(scannedData) {
+async function processScannedCode(scannedData) {
     let code = '';
     
     // URL avec paramètre add
@@ -369,20 +421,29 @@ function processScannedCode(scannedData) {
         return;
     }
     
-    const allInvitations = localStorage.getItem('globalInvitations');
-    let globalInvitations = allInvitations ? JSON.parse(allInvitations) : [];
-    const alreadySent = globalInvitations.find(inv => 
-        inv.fromCode === myFriendCode && inv.toCode === code
-    );
-    
-    if (alreadySent) {
-        globalInvitations = globalInvitations.filter(inv => 
-            !(inv.fromCode === myFriendCode && inv.toCode === code)
-        );
-        localStorage.setItem('globalInvitations', JSON.stringify(globalInvitations));
-        showNotification('🔄 Ancienne invitation remplacée !', 'success');
-        safeVibrate([50, 50]);
-    } else {
+    // Vérifier si une invitation a déjà été envoyée dans Supabase
+    try {
+        const { data } = await supabase
+            .from('invitations')
+            .select('*')
+            .eq('from_code', myFriendCode)
+            .eq('to_code', code);
+        
+        if (data && data.length > 0) {
+            // Supprimer l'ancienne invitation
+            await supabase
+                .from('invitations')
+                .delete()
+                .eq('from_code', myFriendCode)
+                .eq('to_code', code);
+            
+            showNotification('🔄 Ancienne invitation remplacée !', 'success');
+            safeVibrate([50, 50]);
+        } else {
+            showNotification('📸 QR Code scanné avec succès !', 'success');
+        }
+    } catch (err) {
+        console.error('Erreur:', err);
         showNotification('📸 QR Code scanné avec succès !', 'success');
     }
     
@@ -428,7 +489,7 @@ function showSendInvitationModal(code) {
     safeVibrate(50);
 }
 
-function sendInvitation() {
+async function sendInvitation() {
     const nickname = document.getElementById('nicknameInput').value.trim();
     
     if (!nickname) {
@@ -444,11 +505,11 @@ function sendInvitation() {
         timestamp: Date.now()
     };
     
-    saveInvitation(invitation);
+    await saveInvitation(invitation);
     
     document.getElementById('confirmModal').classList.remove('active');
     
-    showNotification(`📤 Invitation envoyée ! Si vous êtes sur le MÊME NAVIGATEUR, l'autre personne la verra dans 3 secondes max.`, 'success', 6000);
+    showNotification(`📤 Invitation envoyée ! L'autre personne la verra instantanément sur n'importe quel appareil ! 🚀`, 'success', 6000);
     
     safeVibrate([100, 50, 100, 50, 100]);
     
@@ -481,7 +542,7 @@ function showAcceptModal(index) {
     safeVibrate(50);
 }
 
-function acceptInvitation() {
+async function acceptInvitation() {
     if (pendingInvitationIndex < 0) return;
     
     const nickname = document.getElementById('recipientNicknameInput').value.trim();
@@ -494,7 +555,7 @@ function acceptInvitation() {
     
     const invitation = invitations[pendingInvitationIndex];
     
-    // Ajouter l'ami à ma liste
+    // Ajouter l'ami à ma liste (localStorage)
     const newFriend = {
         code: invitation.fromCode,
         nickname: nickname,
@@ -504,7 +565,7 @@ function acceptInvitation() {
     friends.push(newFriend);
     saveFriends();
     
-    // Ajouter moi-même à la liste de l'expéditeur
+    // Ajouter moi-même à la liste de l'expéditeur (localStorage)
     const senderFriendsKey = `friends_${invitation.fromCode}`;
     const senderFriendsData = localStorage.getItem(senderFriendsKey);
     const senderFriends = senderFriendsData ? JSON.parse(senderFriendsData) : [];
@@ -520,8 +581,28 @@ function acceptInvitation() {
     
     localStorage.setItem(senderFriendsKey, JSON.stringify(senderFriends));
     
+    // Sauvegarder les deux amis dans Supabase
+    try {
+        await supabase.from('friends').insert([
+            {
+                user_code: myFriendCode,
+                friend_code: invitation.fromCode,
+                nickname: nickname,
+                added_at: new Date().toISOString()
+            },
+            {
+                user_code: invitation.fromCode,
+                friend_code: myFriendCode,
+                nickname: myNickname,
+                added_at: new Date().toISOString()
+            }
+        ]);
+    } catch (err) {
+        console.error('Erreur Supabase:', err);
+    }
+    
     // Retirer l'invitation
-    removeInvitation(invitation);
+    await removeInvitation(invitation);
     
     document.getElementById('acceptInvitationModal').classList.remove('active');
     
@@ -562,23 +643,43 @@ function refuseInvitationDirect(index) {
 }
 
 // ============================================
-// AUTO-REFRESH DES INVITATIONS
+// TEMPS RÉEL SUPABASE (PLUS DE POLLING !)
 // ============================================
 
-setInterval(() => {
-    console.log('🔄 Auto-refresh des invitations...');
+function setupRealtimeInvitations() {
+    // Souscrire aux changements en temps réel
+    invitationSubscription = supabase
+        .channel('invitations_channel')
+        .on(
+            'postgres_changes',
+            {
+                event: '*', // Tous les événements (INSERT, UPDATE, DELETE)
+                schema: 'public',
+                table: 'invitations',
+                filter: `to_code=eq.${myFriendCode}`
+            },
+            (payload) => {
+                console.log('🔔 Changement détecté:', payload);
+                
+                if (payload.eventType === 'INSERT') {
+                    console.log('🎉 NOUVELLE INVITATION !');
+                    showNotification('📬 Nouvelle invitation reçue !', 'success');
+                    safeVibrate([100, 50, 100]);
+                }
+                
+                // Recharger les invitations
+                loadInvitations();
+            }
+        )
+        .subscribe();
     
-    const currentInvitationCount = invitations.length;
-    loadInvitations();
-    
-    console.log(`📊 Avant: ${currentInvitationCount}, Après: ${invitations.length}`);
-    
-    if (invitations.length > currentInvitationCount) {
-        console.log('🎉 NOUVELLE INVITATION DÉTECTÉE !');
-        showNotification('📬 Nouvelle invitation reçue !', 'success');
-        safeVibrate([100, 50, 100]);
-    }
-}, 3000);
+    console.log('✅ Temps réel activé pour les invitations');
+}
+
+// Appeler au chargement
+window.addEventListener('load', () => {
+    setupRealtimeInvitations();
+});
 
 // ============================================
 // GESTION DES EVENTS CLAVIER

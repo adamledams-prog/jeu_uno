@@ -80,14 +80,15 @@
                     </div>
                 </div>
                 
-                <!-- Avertissement important -->
-                <div style="background: rgba(255, 107, 107, 0.2); border: 2px solid #ff6b6b; border-radius: 15px; padding: 15px; margin-bottom: 20px;">
-                    <p style="color: #fff; font-weight: bold; margin-bottom: 8px;">⚠️ IMPORTANT !</p>
-                    <p style="color: #fff; font-size: 0.9rem; margin-bottom: 5px;">• Les invitations fonctionnent UNIQUEMENT sur le <strong>même navigateur</strong></p>
-                    <p style="color: #fff; font-size: 0.9rem; margin-bottom: 5px;">• Si tu ne reçois pas d'invitation, vérifie :</p>
-                    <p style="color: #fff; font-size: 0.85rem; margin-left: 20px;">✓ Même navigateur (pas Chrome + Firefox)</p>
-                    <p style="color: #fff; font-size: 0.85rem; margin-left: 20px;">✓ Pas de mode navigation privée/incognito</p>
-                    <p style="color: #fff; font-size: 0.85rem; margin-left: 20px;">✓ Ouvre la console (F12) pour voir les logs</p>
+                <!-- Avertissement Supabase -->
+                <div style="background: rgba(76, 175, 80, 0.2); border: 2px solid #4caf50; border-radius: 15px; padding: 15px; margin-bottom: 20px;">
+                    <p style="color: #fff; font-weight: bold; margin-bottom: 8px;">✅ SYSTÈME EN LIGNE !</p>
+                    <p style="color: #fff; font-size: 0.9rem; margin-bottom: 5px;">• Fonctionne maintenant entre <strong>TOUS les appareils</strong> !</p>
+                    <p style="color: #fff; font-size: 0.85rem; margin-left: 20px;">✓ PC, téléphone, tablette</p>
+                    <p style="color: #fff; font-size: 0.85rem; margin-left: 20px;">✓ Chrome, Firefox, Safari, Edge</p>
+                    <p style="color: #fff; font-size: 0.85rem; margin-left: 20px;">✓ Navigation privée/incognito OK</p>
+                    <p style="color: #fff; font-size: 0.85rem; margin-left: 20px;">✓ Invitations en <strong>temps réel</strong> ⚡</p>
+                    <p style="color: #fff; font-size: 0.8rem; margin-top: 8px; opacity: 0.9;">Propulsé par Supabase 🚀</p>
                 </div>
                 
                 <div class="invitations-container" id="invitationsContainer">
@@ -162,7 +163,7 @@
         <div class="modal-content">
             <h2>➕ Ajouter un ami</h2>
             <p class="modal-subtitle">Choisis une méthode</p>
-            <p style="color: #ff6b6b; font-size: 0.9rem; margin-bottom: 15px;">⚠️ Fonctionne uniquement sur le même navigateur (même onglets)</p>
+            <p style="color: #4caf50; font-size: 0.9rem; margin-bottom: 15px;">✅ Fonctionne sur tous les appareils ! 🌐</p>
             
             <div class="add-methods">
                 <button class="method-btn" onclick="showCodeInput()">
@@ -298,10 +299,18 @@
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
+    <!-- Bibliothèque Supabase (pour la base de données) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <!-- Bibliothèque de scan QR Code -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    
+    <!-- Configuration Supabase (tes clés API) -->
+    <script src="supabase-config.js"></script>
+    
     <!-- Système principal : amis, profil, chat -->
     <script src="ami.js"></script>
+    
     <!-- Système d'invitations : envoi, réception, scan QR -->
     <script src="ami2.js"></script>
 </body>
