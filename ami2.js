@@ -54,24 +54,26 @@ async function checkForFriendCodeInURL() {
                 return;
             }
             
-            // Vérifier si une invitation a déjà été envoyée dans Supabase
-            try {
-                const { data } = await supabase
-                    .from('invitations')
-                    .select('*')
-                    .eq('from_code', myFriendCode)
-                    .eq('to_code', friendCodeToAdd);
-                
-                if (data && data.length > 0) {
-                    // Supprimer l'ancienne invitation
-                    await supabase
+            // Vérifier si une invitation a déjà été envoyée
+            if (window.isSupabaseConfigured && window.supabaseClient) {
+                try {
+                    const { data } = await window.supabaseClient
                         .from('invitations')
-                        .delete()
+                        .select('*')
                         .eq('from_code', myFriendCode)
                         .eq('to_code', friendCodeToAdd);
+                    
+                    if (data && data.length > 0) {
+                        // Supprimer l'ancienne invitation
+                        await window.supabaseClient
+                            .from('invitations')
+                            .delete()
+                            .eq('from_code', myFriendCode)
+                            .eq('to_code', friendCodeToAdd);
+                    }
+                } catch (err) {
+                    console.error('Erreur:', err);
                 }
-            } catch (err) {
-                console.error('Erreur:', err);
             }
             
             pendingFriendCode = friendCodeToAdd;
@@ -94,78 +96,156 @@ async function checkForFriendCodeInURL() {
 
 async function loadInvitations() {
     try {
-        // Récupérer les invitations depuis Supabase
-        const { data, error } = await supabase
-            .from('invitations')
-            .select('*')
-            .eq('to_code', myFriendCode);
-        
-        if (error) {
-            console.error('❌ Erreur Supabase:', error);
-            return;
+        // Si Supabase est configuré, l'utiliser
+        if (window.isSupabaseConfigured && window.supabaseClient) {
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('invitations')
+                    .select('*')
+                    .eq('to_code', myFriendCode);
+                
+                if (error) {
+                    console.error('❌ Erreur Supabase:', error);
+                    console.log('🔄 Passage en mode localStorage');
+                    loadInvitationsFromLocalStorage();
+                    return;
+                }
+                
+                // Convertir au format interne
+                invitations = (data || []).map(inv => ({
+                    fromCode: inv.from_code,
+                    fromNickname: inv.from_nickname,
+                    toCode: inv.to_code,
+                    timestamp: inv.timestamp,
+                    id: inv.id
+                }));
+                
+                console.log('📬 Mon code:', myFriendCode);
+                console.log('✅ Mes invitations (Supabase):', invitations);
+                
+                displayInvitations();
+                return;
+            } catch (err) {
+                console.error('❌ Erreur Supabase:', err);
+                console.log('🔄 Passage en mode localStorage');
+            }
         }
         
-        // Convertir au format interne
-        invitations = data.map(inv => ({
-            fromCode: inv.from_code,
-            fromNickname: inv.from_nickname,
-            toCode: inv.to_code,
-            timestamp: inv.timestamp,
-            id: inv.id
-        }));
-        
-        console.log('📬 Mon code:', myFriendCode);
-        console.log('✅ Mes invitations:', invitations);
-        
-        displayInvitations();
+        // Sinon, utiliser localStorage
+        loadInvitationsFromLocalStorage();
     } catch (err) {
         console.error('❌ Erreur:', err);
+        loadInvitationsFromLocalStorage();
     }
+}
+
+// Fonction de secours : charger depuis localStorage
+function loadInvitationsFromLocalStorage() {
+    const saved = localStorage.getItem(`invitations_${myFriendCode}`);
+    invitations = saved ? JSON.parse(saved) : [];
+    console.log('📬 Mon code:', myFriendCode);
+    console.log('✅ Mes invitations (localStorage):', invitations);
+    displayInvitations();
+}
+
+// Fonction de secours : sauvegarder dans localStorage
+function saveInvitationsToLocalStorage() {
+    localStorage.setItem(`invitations_${myFriendCode}`, JSON.stringify(invitations));
 }
 
 async function saveInvitation(invitation) {
     try {
-        // Sauvegarder dans Supabase
-        const { data, error } = await supabase
-            .from('invitations')
-            .insert([{
-                from_code: invitation.fromCode,
-                from_nickname: invitation.fromNickname,
-                to_code: invitation.toCode,
-                timestamp: invitation.timestamp
-            }])
-            .select();
-        
-        if (error) {
-            console.error('❌ Erreur Supabase:', error);
-            showNotification('❌ Erreur lors de l\'envoi de l\'invitation', 'error');
-            return;
+        // Si Supabase est configuré, l'utiliser
+        if (window.isSupabaseConfigured && window.supabaseClient) {
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('invitations')
+                    .insert([{
+                        from_code: invitation.fromCode,
+                        from_nickname: invitation.fromNickname,
+                        to_code: invitation.toCode,
+                        timestamp: invitation.timestamp
+                    }])
+                    .select();
+                
+                if (error) {
+                    console.error('❌ Erreur Supabase:', error);
+                    console.log('🔄 Sauvegarde en localStorage');
+                    saveInvitationToLocalStorage(invitation);
+                    return;
+                }
+                
+                console.log('📤 Invitation sauvegardée (Supabase):', data);
+                return;
+            } catch (err) {
+                console.error('❌ Erreur Supabase:', err);
+            }
         }
         
-        console.log('📤 Invitation sauvegardée:', data);
+        // Sinon, utiliser localStorage
+        saveInvitationToLocalStorage(invitation);
     } catch (err) {
         console.error('❌ Erreur:', err);
+        saveInvitationToLocalStorage(invitation);
     }
+}
+
+// Fonction de secours : sauvegarder dans localStorage
+function saveInvitationToLocalStorage(invitation) {
+    // Charger les invitations du destinataire
+    const saved = localStorage.getItem(`invitations_${invitation.toCode}`);
+    const targetInvitations = saved ? JSON.parse(saved) : [];
+    
+    // Ajouter l'invitation avec un ID unique
+    invitation.id = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    targetInvitations.push(invitation);
+    
+    // Sauvegarder
+    localStorage.setItem(`invitations_${invitation.toCode}`, JSON.stringify(targetInvitations));
+    console.log('📤 Invitation sauvegardée (localStorage):', invitation);
 }
 
 async function removeInvitation(invitationToRemove) {
     try {
-        // Supprimer de Supabase
-        const { error } = await supabase
-            .from('invitations')
-            .delete()
-            .eq('id', invitationToRemove.id);
-        
-        if (error) {
-            console.error('❌ Erreur Supabase:', error);
-            return;
+        // Si Supabase est configuré, l'utiliser
+        if (window.isSupabaseConfigured && window.supabaseClient) {
+            try {
+                const { error } = await window.supabaseClient
+                    .from('invitations')
+                    .delete()
+                    .eq('id', invitationToRemove.id);
+                
+                if (error) {
+                    console.error('❌ Erreur Supabase:', error);
+                    removeInvitationFromLocalStorage(invitationToRemove);
+                    return;
+                }
+                
+                console.log('🗑️ Invitation supprimée (Supabase)');
+                loadInvitations();
+                return;
+            } catch (err) {
+                console.error('❌ Erreur Supabase:', err);
+            }
         }
         
-        console.log('🗑️ Invitation supprimée');
-        loadInvitations();
+        // Sinon, utiliser localStorage
+        removeInvitationFromLocalStorage(invitationToRemove);
     } catch (err) {
         console.error('❌ Erreur:', err);
+        removeInvitationFromLocalStorage(invitationToRemove);
     }
+}
+
+// Fonction de secours : supprimer de localStorage
+function removeInvitationFromLocalStorage(invitationToRemove) {
+    invitations = invitations.filter(inv => 
+        inv.id !== invitationToRemove.id && 
+        inv.timestamp !== invitationToRemove.timestamp
+    );
+    saveInvitationsToLocalStorage();
+    console.log('🗑️ Invitation supprimée (localStorage)');
+    displayInvitations();
 }
 
 function displayInvitations() {
@@ -295,27 +375,29 @@ async function verifyCode() {
         return;
     }
     
-    // Vérifier si une invitation a déjà été envoyée dans Supabase
-    try {
-        const { data } = await supabase
-            .from('invitations')
-            .select('*')
-            .eq('from_code', myFriendCode)
-            .eq('to_code', code);
-        
-        if (data && data.length > 0) {
-            // Supprimer l'ancienne invitation
-            await supabase
+    // Vérifier si une invitation a déjà été envoyée
+    if (window.isSupabaseConfigured && window.supabaseClient) {
+        try {
+            const { data } = await window.supabaseClient
                 .from('invitations')
-                .delete()
+                .select('*')
                 .eq('from_code', myFriendCode)
                 .eq('to_code', code);
             
-            showNotification('🔄 Ancienne invitation remplacée !', 'success');
-            safeVibrate([50, 50]);
+            if (data && data.length > 0) {
+                // Supprimer l'ancienne invitation
+                await window.supabaseClient
+                    .from('invitations')
+                    .delete()
+                    .eq('from_code', myFriendCode)
+                    .eq('to_code', code);
+                
+                showNotification('🔄 Ancienne invitation remplacée !', 'success');
+                safeVibrate([50, 50]);
+            }
+        } catch (err) {
+            console.error('Erreur:', err);
         }
-    } catch (err) {
-        console.error('Erreur:', err);
     }
     
     pendingFriendCode = code;
@@ -421,30 +503,45 @@ async function processScannedCode(scannedData) {
         return;
     }
     
-    // Vérifier si une invitation a déjà été envoyée dans Supabase
-    try {
-        const { data } = await supabase
-            .from('invitations')
-            .select('*')
-            .eq('from_code', myFriendCode)
-            .eq('to_code', code);
-        
-        if (data && data.length > 0) {
-            // Supprimer l'ancienne invitation
-            await supabase
+    // Vérifier si une invitation a déjà été envoyée
+    if (window.isSupabaseConfigured && window.supabaseClient) {
+        try {
+            const { data } = await window.supabaseClient
                 .from('invitations')
-                .delete()
+                .select('*')
                 .eq('from_code', myFriendCode)
                 .eq('to_code', code);
             
-            showNotification('🔄 Ancienne invitation remplacée !', 'success');
-            safeVibrate([50, 50]);
+            if (data && data.length > 0) {
+                // Supprimer l'ancienne invitation
+                await window.supabaseClient
+                    .from('invitations')
+                    .delete()
+                    .eq('from_code', myFriendCode)
+                    .eq('to_code', code);
+                
+                showNotification('🔄 Ancienne invitation remplacée !', 'success');
+                safeVibrate([50, 50]);
+            } else {
+                showNotification('📸 QR Code scanné avec succès !', 'success');
+            }
+        } catch (err) {
+            console.error('Erreur:', err);
+            showNotification('📸 QR Code scanné avec succès !', 'success');
+        }
+    } else {
+        // Mode localStorage : vérifier les invitations locales
+        const saved = localStorage.getItem(`invitations_${code}`);
+        const existingInvitations = saved ? JSON.parse(saved) : [];
+        const alreadySent = existingInvitations.find(inv => 
+            inv.fromCode === myFriendCode
+        );
+        
+        if (alreadySent) {
+            showNotification('🔄 Tu as déjà envoyé une invitation !', 'info');
         } else {
             showNotification('📸 QR Code scanné avec succès !', 'success');
         }
-    } catch (err) {
-        console.error('Erreur:', err);
-        showNotification('📸 QR Code scanné avec succès !', 'success');
     }
     
     pendingFriendCode = code;
@@ -581,24 +678,26 @@ async function acceptInvitation() {
     
     localStorage.setItem(senderFriendsKey, JSON.stringify(senderFriends));
     
-    // Sauvegarder les deux amis dans Supabase
-    try {
-        await supabase.from('friends').insert([
-            {
-                user_code: myFriendCode,
-                friend_code: invitation.fromCode,
-                nickname: nickname,
-                added_at: new Date().toISOString()
-            },
-            {
-                user_code: invitation.fromCode,
-                friend_code: myFriendCode,
-                nickname: myNickname,
-                added_at: new Date().toISOString()
-            }
-        ]);
-    } catch (err) {
-        console.error('Erreur Supabase:', err);
+    // Sauvegarder les deux amis dans Supabase (si configuré)
+    if (window.isSupabaseConfigured && window.supabaseClient) {
+        try {
+            await window.supabaseClient.from('friends').insert([
+                {
+                    user_code: myFriendCode,
+                    friend_code: invitation.fromCode,
+                    nickname: nickname,
+                    added_at: new Date().toISOString()
+                },
+                {
+                    user_code: invitation.fromCode,
+                    friend_code: myFriendCode,
+                    nickname: myNickname,
+                    added_at: new Date().toISOString()
+                }
+            ]);
+        } catch (err) {
+            console.error('Erreur Supabase:', err);
+        }
     }
     
     // Retirer l'invitation
@@ -643,12 +742,18 @@ function refuseInvitationDirect(index) {
 }
 
 // ============================================
-// TEMPS RÉEL SUPABASE (PLUS DE POLLING !)
+// TEMPS RÉEL SUPABASE (UNIQUEMENT SI CONFIGURÉ)
 // ============================================
 
 function setupRealtimeInvitations() {
+    // Ne pas activer le temps réel si Supabase n'est pas configuré
+    if (!window.isSupabaseConfigured || !window.supabaseClient) {
+        console.log('⚠️ Temps réel Supabase non disponible - Mode localStorage actif');
+        return;
+    }
+    
     // Souscrire aux changements en temps réel
-    invitationSubscription = supabase
+    invitationSubscription = window.supabaseClient
         .channel('invitations_channel')
         .on(
             'postgres_changes',
@@ -673,7 +778,7 @@ function setupRealtimeInvitations() {
         )
         .subscribe();
     
-    console.log('✅ Temps réel activé pour les invitations');
+    console.log('✅ Temps réel Supabase activé pour les invitations');
 }
 
 // Appeler au chargement

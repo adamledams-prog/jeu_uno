@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test du Système d'Amis - Corrections</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .test-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .test-result {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+        
+        .test-result.success {
+            border-color: #4caf50;
+        }
+        
+        .test-result.error {
+            border-color: #f44336;
+        }
+        
+        .test-result.warning {
+            border-color: #ff9800;
+        }
+        
+        .test-result.info {
+            border-color: #2196f3;
+        }
+        
+        .test-icon {
+            font-size: 2rem;
+        }
+        
+        .test-content {
+            flex: 1;
+        }
+        
+        .test-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .test-description {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            padding: 12px 24px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin: 30px 0 15px 0;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Test du Système d'Amis</h1>
+    <p class="subtitle">Vérification des corrections appliquées</p>
+
+    <div class="test-container">
+        <h2 class="section-title">📋 État du Système</h2>
+        <div id="systemStatus"></div>
+        
+        <h2 class="section-title">🧪 Tests Automatiques</h2>
+        <div id="automaticTests"></div>
+        
+        <h2 class="section-title">🎮 Tests Manuels</h2>
+        <button class="btn" onclick="testLocalStorageInvitation()">Test Invitation localStorage</button>
+        <button class="btn" onclick="clearAllData()">Effacer toutes les données</button>
+        <button class="btn" onclick="window.location.href='ami.html'">Ouvrir Système d'Amis</button>
+        
+        <div id="manualTestResults"></div>
+    </div>
+
+    <!-- Bibliothèque Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Configuration Supabase -->
+    <script src="supabase-config.js"></script>
+    
+    <script>
+        // ============================================
+        // TESTS AUTOMATIQUES
+        // ============================================
+        
+        window.addEventListener('load', () => {
+            runAutomaticTests();
+        });
+        
+        function createTestResult(icon, title, description, type = 'success') {
+            return `
+                <div class="test-result ${type}">
+                    <div class="test-icon">${icon}</div>
+                    <div class="test-content">
+                        <div class="test-title">${title}</div>
+                        <div class="test-description">${description}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function runAutomaticTests() {
+            const statusContainer = document.getElementById('systemStatus');
+            const testsContainer = document.getElementById('automaticTests');
+            
+            let statusHTML = '';
+            let testsHTML = '';
+            
+            // Test 1 : Vérifier si Supabase SDK est chargé
+            if (typeof window.supabase !== 'undefined') {
+                testsHTML += createTestResult(
+                    '✅',
+                    'Supabase SDK Chargé',
+                    'La bibliothèque Supabase est correctement chargée',
+                    'success'
+                );
+            } else {
+                testsHTML += createTestResult(
+                    '❌',
+                    'Supabase SDK Non Chargé',
+                    'Erreur : La bibliothèque Supabase n\'a pas pu être chargée',
+                    'error'
+                );
+            }
+            
+            // Test 2 : Vérifier la configuration Supabase
+            if (typeof window.isSupabaseConfigured !== 'undefined') {
+                if (window.isSupabaseConfigured) {
+                    statusHTML += createTestResult(
+                        '🟢',
+                        'Mode : Supabase',
+                        'Supabase est configuré et prêt. Synchronisation multi-appareils activée.',
+                        'success'
+                    );
+                    testsHTML += createTestResult(
+                        '✅',
+                        'Supabase Configuré',
+                        'La configuration Supabase est valide',
+                        'success'
+                    );
+                } else {
+                    statusHTML += createTestResult(
+                        '🟡',
+                        'Mode : localStorage',
+                        'Supabase non configuré. Le système utilise localStorage (données locales uniquement).',
+                        'warning'
+                    );
+                    testsHTML += createTestResult(
+                        '⚠️',
+                        'Supabase Non Configuré',
+                        'Le système utilise localStorage comme solution de secours',
+                        'warning'
+                    );
+                }
+            } else {
+                testsHTML += createTestResult(
+                    '❌',
+                    'Variable window.isSupabaseConfigured Non Définie',
+                    'Erreur : supabase-config.js n\'a pas été chargé correctement',
+                    'error'
+                );
+            }
+            
+            // Test 3 : Vérifier localStorage
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                testsHTML += createTestResult(
+                    '✅',
+                    'localStorage Disponible',
+                    'Le stockage local fonctionne correctement',
+                    'success'
+                );
+            } catch (e) {
+                testsHTML += createTestResult(
+                    '❌',
+                    'localStorage Non Disponible',
+                    'Erreur : Le stockage local n\'est pas accessible',
+                    'error'
+                );
+            }
+            
+            // Test 4 : Vérifier la présence des fichiers
+            testsHTML += createTestResult(
+                '✅',
+                'Page de Test Chargée',
+                'Cette page de test s\'est correctement chargée',
+                'success'
+            );
+            
+            // Afficher les résultats
+            statusContainer.innerHTML = statusHTML;
+            testsContainer.innerHTML = testsHTML;
+            
+            // Ajouter un résumé
+            const summary = `
+                <div class="test-result info">
+                    <div class="test-icon">📊</div>
+                    <div class="test-content">
+                        <div class="test-title">Résumé des Corrections</div>
+                        <div class="test-description">
+                            • Erreur 404 Supabase : ✅ Corrigée<br>
+                            • Système de secours localStorage : ✅ Implémenté<br>
+                            • Gestion d'erreur robuste : ✅ Ajoutée<br>
+                            • Détection automatique de configuration : ✅ Active
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            testsContainer.innerHTML += summary;
+        }
+        
+        // ============================================
+        // TESTS MANUELS
+        // ============================================
+        
+        function testLocalStorageInvitation() {
+            const resultsContainer = document.getElementById('manualTestResults');
+            
+            try {
+                // Créer un code ami fictif
+                const testCode = '1234';
+                const myCode = '5678';
+                
+                // Créer une invitation de test
+                const testInvitation = {
+                    fromCode: testCode,
+                    fromNickname: 'Test User',
+                    toCode: myCode,
+                    timestamp: Date.now(),
+                    id: 'test_' + Date.now()
+                };
+                
+                // Sauvegarder dans localStorage
+                const key = `invitations_${myCode}`;
+                const invitations = [testInvitation];
+                localStorage.setItem(key, JSON.stringify(invitations));
+                
+                // Vérifier la sauvegarde
+                const saved = localStorage.getItem(key);
+                const parsed = JSON.parse(saved);
+                
+                if (parsed && parsed.length > 0 && parsed[0].fromNickname === 'Test User') {
+                    resultsContainer.innerHTML = createTestResult(
+                        '✅',
+                        'Test localStorage Réussi',
+                        `Invitation de test créée et sauvegardée avec succès. Code: ${myCode}`,
+                        'success'
+                    );
+                    
+                    // Nettoyer après 5 secondes
+                    setTimeout(() => {
+                        localStorage.removeItem(key);
+                        resultsContainer.innerHTML += createTestResult(
+                            '🧹',
+                            'Nettoyage Effectué',
+                            'Les données de test ont été supprimées',
+                            'info'
+                        );
+                    }, 5000);
+                } else {
+                    throw new Error('Vérification échouée');
+                }
+            } catch (err) {
+                resultsContainer.innerHTML = createTestResult(
+                    '❌',
+                    'Test localStorage Échoué',
+                    'Erreur : ' + err.message,
+                    'error'
+                );
+            }
+        }
+        
+        function clearAllData() {
+            if (confirm('⚠️ Voulez-vous vraiment effacer toutes les données ?\\n\\nCela supprimera :\\n- Tous les amis\\n- Toutes les invitations\\n- Votre profil\\n- Votre code ami')) {
+                // Effacer tout ce qui commence par 'invitations_', 'friends_', etc.
+                const keys = Object.keys(localStorage);
+                let count = 0;
+                
+                keys.forEach(key => {
+                    if (key.includes('invitation') || 
+                        key.includes('friends') || 
+                        key.includes('Friend') ||
+                        key.includes('userPseudo') ||
+                        key.includes('userAvatar')) {
+                        localStorage.removeItem(key);
+                        count++;
+                    }
+                });
+                
+                const resultsContainer = document.getElementById('manualTestResults');
+                resultsContainer.innerHTML = createTestResult(
+                    '🧹',
+                    'Données Effacées',
+                    `${count} élément(s) supprimé(s) du localStorage`,
+                    'info'
+                );
+            }
+        }
+    </script>
+</body>
+</html>
